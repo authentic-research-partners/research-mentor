@@ -1,0 +1,11 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "research-mentor"
+version = "0.0.1"
+authors = [{name = "Sergey Samsonau"}]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/research_mentor"]
