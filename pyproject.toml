@@ -6,8 +6,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "research-mentor"
-version = "1.0.0"
-description = "AI-powered research mentor for individual students. Local-first, no cloud dependencies. Uses Claude Code CLI or local vLLM for LLM inference and SQLite for storage."
+version = "1.0.1"
+description = "AI-powered research mentor that guides you through your research journey."
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 authors = [
@@ -53,6 +53,7 @@ dependencies = [
     "langgraph-checkpoint-sqlite>=2.0.0",
     "openai>=1.0.0",
     "aiosqlite>=0.20.0",
+    "aiosqlitepool>=1.0.0",
     "sqlite-vec>=0.1.6",
     "sentence-transformers>=2.0.0",
     "arxiv>=2.1.0",

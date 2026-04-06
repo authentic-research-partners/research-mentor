@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.1 (2026-04-06)
+
+- Fix assessment score display to use 0-100 scale matching backend
+- Sync UI hypothesis stage names with backend graph
+- Remove orphaned phase labels from stage configuration
+- Add missing `aiosqlitepool` dependency
+
 ## v1.0.0 (2026-04-06)
 
 Initial public release.
