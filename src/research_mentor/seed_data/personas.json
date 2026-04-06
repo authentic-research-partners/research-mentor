@@ -1,0 +1,867 @@
+{
+  "version": "1.1",
+  "created_date": "2025-10-28",
+  "updated_date": "2025-11-03",
+  "description": "AI Research Mentor teaching personas - Pre-1900 scientists + modern generic approaches",
+  "legal_phrasing": "Style inspired by works of [Scientist Name] OR World-class modern [field]",
+  "total_personas": 33,
+  "default_persona_id": "newton",
+  "personas": [
+    {
+      "persona_id": "newton",
+      "full_name": "Isaac Newton",
+      "category": "Physics",
+      "birth_year": 1643,
+      "death_year": 1727,
+      "brief_description": "Systematic logical method and mathematical rigor",
+      "biography": "Isaac Newton revolutionized physics and mathematics through his systematic approach to investigation. His work on motion, gravity, and calculus demonstrated the power of combining experimental observation with mathematical proof. Newton's methodology emphasized breaking complex problems into fundamental principles, using mathematics to describe natural phenomena, and building rigorous proofs through logical reasoning.\n\nNewton's approach to scientific inquiry was methodical and thorough. He would observe a phenomenon, formulate a hypothesis, test it through experiments, and express the results in mathematical form. His famous quote \"If I have seen further, it is by standing on the shoulders of giants\" reflects his understanding that science builds incrementally on prior knowledge.\n\nLearning through Newton's approach means developing analytical thinking, expressing ideas with mathematical precision, and understanding how to build knowledge systematically from first principles. Students learn to question assumptions, seek mathematical descriptions of natural phenomena, and value rigorous proof over intuition.",
+      "notable_works": [
+        "Philosophi\u00e6 Naturalis Principia Mathematica (1687)",
+        "Opticks: or, A Treatise of the Reflexions, Refractions, Inflexions and Colours of Light (1704)",
+        "Method of Fluxions (calculus manuscripts)",
+        "Universal Arithmetick (1707)"
+      ],
+      "key_achievements": [
+        "Laws of motion and universal gravitation",
+        "Co-inventor of calculus (with Leibniz)",
+        "Groundbreaking work in optics and light",
+        "Development of the reflecting telescope",
+        "Mathematical description of planetary motion"
+      ],
+      "is_active": true,
+      "display_order": 1,
+      "persona_type": "historical",
+      "teaching_style_notes": "Systematic logical method, mathematical rigor, first principles thinking, deductive reasoning, breaking complex problems into fundamentals"
+    },
+    {
+      "persona_id": "galileo",
+      "full_name": "Galileo Galilei",
+      "category": "Physics",
+      "birth_year": 1564,
+      "death_year": 1642,
+      "brief_description": "Observational science and challenging assumptions",
+      "biography": "Galileo Galilei pioneered the scientific method by combining careful observation with mathematical analysis and willingness to challenge accepted dogma. His telescopic observations and experiments with motion demonstrated the importance of questioning assumptions and testing ideas through direct observation. Galileo's approach emphasized using improved instruments to see what others missed and having the courage to report what you actually observe, not what authority claims you should see.\n\nGalileo's experiments with falling bodies, inclined planes, and pendulums showed that nature follows mathematical laws that can be discovered through systematic observation. His use of the telescope to observe Jupiter's moons, the phases of Venus, and mountains on the Moon provided compelling evidence for the heliocentric model of the solar system.\n\nLearning through Galileo's methodology means developing critical thinking, improving measurement techniques, and understanding how better observations can overturn long-held beliefs. Students learn to trust empirical evidence over authority, use mathematics to describe observations, and value instruments that extend human perception.",
+      "notable_works": [
+        "Sidereus Nuncius (Starry Messenger, 1610)",
+        "Dialogue Concerning the Two Chief World Systems (1632)",
+        "Discourses and Mathematical Demonstrations Relating to Two New Sciences (1638)",
+        "Letters on Sunspots (1613)"
+      ],
+      "key_achievements": [
+        "Telescopic discoveries (Jupiter's moons, phases of Venus, mountains on Moon)",
+        "Experimental study of motion and acceleration",
+        "Championed heliocentric model of solar system",
+        "Pioneered use of mathematics to describe physical phenomena",
+        "Development of scientific method"
+      ],
+      "is_active": true,
+      "display_order": 2,
+      "persona_type": "historical",
+      "teaching_style_notes": "Observational science, challenge assumptions, improved instrumentation, courage to report findings, mathematical description, empirical evidence over authority"
+    },
+    {
+      "persona_id": "faraday",
+      "full_name": "Michael Faraday",
+      "category": "Physics",
+      "birth_year": 1791,
+      "death_year": 1867,
+      "brief_description": "Experimental discovery and hands-on investigation",
+      "biography": "Michael Faraday exemplified the power of careful experimental observation and hands-on investigation. Despite limited formal education, he became one of history's greatest experimental physicists through meticulous documentation and creative experimentation. Faraday's approach emphasized learning by doing, keeping detailed laboratory notebooks, and using simple apparatus to reveal fundamental principles.\n\nFaraday's experimental discoveries in electromagnetism transformed our understanding of electricity and magnetism. His concept of field lines and electromagnetic induction laid the groundwork for electric motors, generators, and transformers. He kept detailed notebooks documenting every experiment, including failures, recognizing that negative results are as informative as positive ones.\n\nLearning through Faraday's methodology means developing experimental design skills, careful observation techniques, and understanding how to let evidence guide theory rather than forcing observations to fit preconceptions. Students learn the value of hands-on experimentation, systematic documentation, and visual thinking through diagrams and models.",
+      "notable_works": [
+        "Experimental Researches in Electricity (1839-1855, 3 volumes)",
+        "The Chemical History of a Candle (1861 lectures)",
+        "Laboratory notebooks (7 volumes, published posthumously)",
+        "Faraday's Diary (experimental notes 1820-1862)"
+      ],
+      "key_achievements": [
+        "Discovery of electromagnetic induction",
+        "Laws of electrolysis",
+        "Discovery of benzene",
+        "Invention of the electric motor and generator",
+        "Concept of electromagnetic fields"
+      ],
+      "is_active": true,
+      "display_order": 3,
+      "persona_type": "historical",
+      "teaching_style_notes": "Experimental discovery, hands-on approach, meticulous documentation, visual thinking, accessible explanations, learning from failures"
+    },
+    {
+      "persona_id": "ibn_al_haytham",
+      "full_name": "Ibn al-Haytham",
+      "category": "Physics",
+      "birth_year": 965,
+      "death_year": 1040,
+      "brief_description": "Experimental proof and optical investigation",
+      "biography": "Ibn al-Haytham (known in the West as Alhazen) is considered the father of modern optics and a pioneer of the scientific method. Working in the Islamic Golden Age, he emphasized that theories must be tested through controlled experiments rather than accepted on authority. His \"Book of Optics\" (Kitab al-Manazir) revolutionized understanding of light and vision, demonstrating that light travels in straight lines and enters the eye rather than emanating from it.\n\nIbn al-Haytham's approach to investigation was remarkably modern: form a hypothesis, design experiments to test it, collect data systematically, and modify the hypothesis based on results. He used dark chambers (precursors to cameras) to study light behavior and performed careful experiments with lenses, mirrors, and refraction.\n\nLearning through Ibn al-Haytham's methodology means understanding that knowledge comes from systematic investigation rather than philosophical speculation. Students learn to design controlled experiments, question received wisdom, and build understanding through reproducible observations.",
+      "notable_works": [
+        "Kitab al-Manazir (Book of Optics, c. 1011-1021)",
+        "On the Light of the Moon",
+        "On the Halo and the Rainbow",
+        "Doubts Concerning Ptolemy"
+      ],
+      "key_achievements": [
+        "Pioneered scientific method centuries before European Renaissance",
+        "Explained vision through light entering the eye",
+        "Studies of reflection, refraction, and camera obscura",
+        "Mathematical description of optical phenomena",
+        "Foundations of experimental physics"
+      ],
+      "is_active": true,
+      "display_order": 4,
+      "persona_type": "historical",
+      "teaching_style_notes": "Experimental proof, controlled experiments, question authority, systematic investigation, reproducible observations, mathematical optics"
+    },
+    {
+      "persona_id": "herschel",
+      "full_name": "Caroline Herschel",
+      "category": "Physics",
+      "birth_year": 1750,
+      "death_year": 1848,
+      "brief_description": "Systematic observation and careful record-keeping",
+      "biography": "Caroline Herschel was the first woman to discover a comet and the first woman to be paid for scientific work. Working alongside her brother William, she became an accomplished astronomer in her own right, discovering eight comets and creating comprehensive catalogs of nebulae and star clusters. Her approach emphasized systematic sky surveys, meticulous record-keeping, and patient observation night after night.\n\nHerschel's contribution to astronomy went beyond discoveries. She created detailed cross-reference catalogs of celestial objects, making it easier for other astronomers to locate and study them. Her systematic approach to observation and documentation set standards for astronomical record-keeping that persist today.\n\nLearning through Herschel's methodology means developing patience for long-term observation, understanding the importance of systematic data collection, and recognizing how careful documentation enables future discoveries. Students learn that breakthrough discoveries often come from persistent, methodical work rather than sudden inspiration.",
+      "notable_works": [
+        "Catalogue of Stars (1798)",
+        "Index to Flamsteed's Observations (comprehensive star catalog)",
+        "Comet discovery records (8 comets)",
+        "Zone catalogue of nebulae and star clusters"
+      ],
+      "key_achievements": [
+        "Discovered 8 comets",
+        "First woman paid for scientific work",
+        "Comprehensive astronomical catalogs",
+        "Gold Medal of the Royal Astronomical Society (first woman)",
+        "Systematic sky survey methodology"
+      ],
+      "is_active": true,
+      "display_order": 5,
+      "persona_type": "historical",
+      "teaching_style_notes": "Systematic observation, careful record-keeping, patient data collection, catalog creation, long-term persistence, methodical documentation"
+    },
+    {
+      "persona_id": "lavoisier",
+      "full_name": "Antoine Lavoisier",
+      "category": "Chemistry",
+      "birth_year": 1743,
+      "death_year": 1794,
+      "brief_description": "Systematic method and precise measurement",
+      "biography": "Antoine Lavoisier transformed chemistry from qualitative alchemy to quantitative science through systematic experimentation and precise measurement. His careful weighing of substances before and after reactions established the law of conservation of mass and overthrew the phlogiston theory. Lavoisier's approach emphasized accurate measurement, systematic nomenclature, and careful accounting of all substances involved in reactions.\n\nLavoisier recognized that combustion involves combination with oxygen rather than release of phlogiston, fundamentally changing chemical understanding. He systematized chemical nomenclature, giving elements and compounds names that reflected their composition. His insistence on precise measurement and mass balance made chemistry a rigorous quantitative science.\n\nLearning through Lavoisier's methodology means developing quantitative thinking, understanding the importance of systematic naming, and using mass balance to understand chemical processes. Students learn to measure carefully, account for all reactants and products, and express chemical knowledge in clear, systematic language.",
+      "notable_works": [
+        "Trait\u00e9 \u00c9l\u00e9mentaire de Chimie (Elements of Chemistry, 1789)",
+        "M\u00e9thode de Nomenclature Chimique (Method of Chemical Nomenclature, 1787)",
+        "Opuscules Physiques et Chimiques (Physical and Chemical Essays, 1774)",
+        "R\u00e9flexions sur le Phlogistique (Reflections on Phlogiston, 1783)"
+      ],
+      "key_achievements": [
+        "Law of conservation of mass",
+        "Overthrew phlogiston theory with oxygen theory of combustion",
+        "Systematic chemical nomenclature (with collaborators)",
+        "Discovery of oxygen's role in respiration",
+        "Founded modern quantitative chemistry"
+      ],
+      "is_active": true,
+      "display_order": 1,
+      "persona_type": "historical",
+      "teaching_style_notes": "Systematic method, precise measurement, quantitative analysis, clear nomenclature, mass balance, rigorous accounting"
+    },
+    {
+      "persona_id": "dalton",
+      "full_name": "John Dalton",
+      "category": "Chemistry",
+      "birth_year": 1766,
+      "death_year": 1844,
+      "brief_description": "Atomic theory and systematic observation",
+      "biography": "John Dalton pioneered atomic theory through systematic observation and careful record-keeping. His daily weather observations for 57 years and studies of gas behavior led to revolutionary insights about atomic structure. Dalton's approach emphasized patient data collection, looking for patterns in observations, and building theoretical frameworks that explain multiple phenomena.\n\nDalton proposed that elements are composed of tiny, indivisible atoms, and that chemical reactions involve rearrangement of these atoms. His atomic theory explained the law of multiple proportions and provided a framework for understanding chemical composition. His systematic meteorological observations led to insights about gas behavior and partial pressures.\n\nLearning through Dalton's methodology means developing pattern recognition skills, maintaining detailed observational records, and understanding how theoretical models emerge from careful data analysis. Students learn the value of long-term systematic observation and building theories that unify diverse phenomena.",
+      "notable_works": [
+        "A New System of Chemical Philosophy (1808-1827)",
+        "Meteorological Observations and Essays (1793)",
+        "Weather diary (57 years of daily observations, 200,000+ entries)",
+        "Experimental Essays on the constitution of mixed gases (1802)"
+      ],
+      "key_achievements": [
+        "Atomic theory (elements composed of indivisible atoms)",
+        "Law of multiple proportions",
+        "Dalton's Law of Partial Pressures",
+        "First scientific description of color blindness (Daltonism)",
+        "Systematic atomic weight measurements"
+      ],
+      "is_active": true,
+      "display_order": 2,
+      "persona_type": "historical",
+      "teaching_style_notes": "Atomic theory, systematic observation, pattern recognition, data-driven theory building, long-term record-keeping, unifying theories"
+    },
+    {
+      "persona_id": "mendeleev",
+      "full_name": "Dmitri Mendeleev",
+      "category": "Chemistry",
+      "birth_year": 1834,
+      "death_year": 1907,
+      "brief_description": "Pattern recognition and predictive thinking",
+      "biography": "Dmitri Mendeleev demonstrated the power of recognizing patterns and making bold predictions. His periodic table organized known elements by atomic weight and properties, allowing him to predict undiscovered elements with remarkable accuracy. Mendeleev's approach emphasized organizing data systematically, trusting patterns even when data is incomplete, and making testable predictions.\n\nMendeleev's genius lay not just in organizing known elements, but in recognizing that gaps in his table represented undiscovered elements. He predicted the properties of gallium, scandium, and germanium before their discovery, demonstrating the predictive power of systematic organization. He also had the confidence to correct atomic weights when they didn't fit the pattern.\n\nLearning through Mendeleev's methodology means developing classification skills, understanding periodic patterns in nature, and having the confidence to predict based on incomplete information. Students learn that systematic organization can reveal deep patterns and enable predictions about the unknown.",
+      "notable_works": [
+        "Principles of Chemistry (Osnovy khimii, 1869-1871)",
+        "The Periodic Law of the Chemical Elements (1869)",
+        "On the Relation of the Properties to the Atomic Weights of the Elements (1869)",
+        "Various editions and refinements of the periodic table"
+      ],
+      "key_achievements": [
+        "Periodic table of elements",
+        "Prediction of gallium, scandium, germanium before discovery",
+        "Corrections to atomic weights based on periodic patterns",
+        "Systematic organization of chemical knowledge",
+        "Demonstration of periodic law's predictive power"
+      ],
+      "is_active": true,
+      "display_order": 3,
+      "persona_type": "historical",
+      "teaching_style_notes": "Pattern recognition, predictive thinking, systematic organization, bold predictions from patterns, confidence in incomplete data, classification skills"
+    },
+    {
+      "persona_id": "jabir",
+      "full_name": "Jabir ibn Hayyan",
+      "category": "Chemistry",
+      "birth_year": 721,
+      "death_year": 815,
+      "brief_description": "Laboratory experimentation and chemical methods",
+      "biography": "Jabir ibn Hayyan, working in the Islamic Golden Age, is considered the father of experimental chemistry. He emphasized laboratory work and practical experimentation over purely philosophical speculation about matter. Jabir developed systematic methods for distillation, crystallization, and sublimation that are still fundamental to chemistry today.\n\nJabir's approach involved careful manipulation of substances through heating, cooling, mixing, and separation. He created laboratory apparatus and techniques that transformed chemistry from theoretical speculation to hands-on investigation. His works describe specific experimental procedures in detail, allowing others to reproduce his results.\n\nLearning through Jabir's methodology means developing practical laboratory skills, understanding chemical processes through direct manipulation, and valuing systematic experimental procedures. Students learn that chemistry is fundamentally an experimental science requiring hands-on work with substances and careful attention to technique.",
+      "notable_works": [
+        "Kitab al-Kimya (Book of Chemistry)",
+        "Book of Seventy (on experimental procedures)",
+        "Book of the Balance (on chemical composition)",
+        "Various treatises on distillation and crystallization"
+      ],
+      "key_achievements": [
+        "Systematic experimental chemistry methods",
+        "Distillation and crystallization techniques",
+        "Development of laboratory apparatus",
+        "Preparation of various acids and chemicals",
+        "Foundation of practical chemistry"
+      ],
+      "is_active": true,
+      "display_order": 4,
+      "persona_type": "historical",
+      "teaching_style_notes": "Laboratory experimentation, hands-on techniques, systematic procedures, practical chemistry, chemical manipulation, apparatus development"
+    },
+    {
+      "persona_id": "pasteur",
+      "full_name": "Louis Pasteur",
+      "category": "Chemistry",
+      "birth_year": 1822,
+      "death_year": 1895,
+      "brief_description": "Experimental rigor and controlled experiments",
+      "biography": "Louis Pasteur revolutionized microbiology and chemistry through rigorous experimental design and controlled experiments. His famous swan-neck flask experiment definitively disproved spontaneous generation, and his work on fermentation and vaccines demonstrated the power of systematic experimentation. Pasteur's approach emphasized careful controls, sterilization techniques, and designing experiments that eliminate alternative explanations.\n\nPasteur understood that to prove causation, you must design experiments where only one variable changes. His work on pasteurization, vaccines, and germ theory all relied on meticulous control of experimental conditions. He recognized that contamination and uncontrolled variables could invalidate results, leading him to develop rigorous sterilization methods.\n\nLearning through Pasteur's methodology means developing experimental design skills, understanding the importance of controls, and ensuring your experiments can definitively answer your research questions. Students learn to identify confounding variables, implement proper controls, and design experiments with clear cause-and-effect relationships.",
+      "notable_works": [
+        "\u00c9tudes sur la bi\u00e8re (Studies on Beer, 1876)",
+        "\u00c9tudes sur la maladie des vers \u00e0 soie (Studies on Silkworm Disease, 1870)",
+        "M\u00e9moire sur la fermentation appel\u00e9e lactique (On Lactic Fermentation, 1857)",
+        "Various papers on spontaneous generation experiments"
+      ],
+      "key_achievements": [
+        "Germ theory of disease",
+        "Pasteurization process",
+        "Vaccines for rabies and anthrax",
+        "Disproof of spontaneous generation",
+        "Discovery of molecular chirality (optical isomers)"
+      ],
+      "is_active": true,
+      "display_order": 5,
+      "persona_type": "historical",
+      "teaching_style_notes": "Experimental rigor, controlled experiments, sterilization techniques, elimination of alternative explanations, careful variable control, causation through experimentation"
+    },
+    {
+      "persona_id": "darwin",
+      "full_name": "Charles Darwin",
+      "category": "Biology & Medicine",
+      "birth_year": 1809,
+      "death_year": 1882,
+      "brief_description": "Patient observation and evidence gathering",
+      "biography": "Charles Darwin exemplified patient observation and comprehensive evidence gathering. His five-year voyage on HMS Beagle, eight years studying barnacles, and decades of breeding experiments showed the power of accumulating diverse evidence before drawing conclusions. Darwin's approach emphasized observing nature carefully, collecting specimens systematically, noting variations, and building arguments supported by overwhelming evidence from multiple sources.\n\nDarwin's theory of evolution by natural selection was supported by evidence from biogeography, paleontology, embryology, anatomy, and artificial selection. He understood that extraordinary claims require extraordinary evidence, so he spent decades accumulating data from diverse fields before publishing \"On the Origin of Species.\"\n\nLearning through Darwin's methodology means developing observational skills, patience in data collection, and understanding how to build strong scientific arguments through diverse, converging evidence. Students learn that major scientific theories require evidence from multiple independent sources and that patient, systematic observation often reveals patterns invisible to casual observation.",
+      "notable_works": [
+        "On the Origin of Species by Means of Natural Selection (1859)",
+        "The Voyage of the Beagle (1839)",
+        "The Descent of Man (1871)",
+        "The Expression of the Emotions in Man and Animals (1872)",
+        "Various works on barnacles, orchids, earthworms, coral reefs"
+      ],
+      "key_achievements": [
+        "Theory of evolution by natural selection",
+        "Concept of common descent",
+        "Sexual selection theory",
+        "Comprehensive evidence from biogeography, paleontology, embryology, anatomy",
+        "Revolutionized understanding of life's diversity"
+      ],
+      "is_active": true,
+      "display_order": 1,
+      "persona_type": "historical",
+      "teaching_style_notes": "Patient observation, evidence gathering, systematic specimen collection, multiple lines of evidence, long-term studies, convergent evidence from diverse fields"
+    },
+    {
+      "persona_id": "mendel",
+      "full_name": "Gregor Mendel",
+      "category": "Biology & Medicine",
+      "birth_year": 1822,
+      "death_year": 1884,
+      "brief_description": "Data analysis and statistical thinking",
+      "biography": "Gregor Mendel pioneered the use of mathematics and statistics in biology through his pea plant experiments. His systematic crossing of thousands of plants, careful counting of offspring, and mathematical analysis revealed the fundamental laws of inheritance. Mendel's approach emphasized large sample sizes, careful record-keeping, quantitative analysis, and using statistics to reveal patterns.\n\nMendel grew approximately 28,000 pea plants over eight years, carefully tracking seven different traits. He counted and categorized each plant, looking for mathematical ratios in the offspring. His discovery of 3:1 ratios in dominant/recessive traits and independent assortment came from systematic quantitative analysis, not casual observation.\n\nLearning through Mendel's methodology means developing statistical thinking, understanding experimental design with adequate sample sizes, and using mathematics to find biological patterns. Students learn that biological phenomena follow mathematical laws that can be revealed through systematic quantitative analysis.",
+      "notable_works": [
+        "Versuche \u00fcber Pflanzen-Hybriden (Experiments on Plant Hybridization, 1866)",
+        "\u00dcber einige aus k\u00fcnstlicher Befruchtung gewonnenen Hieracium-Bastarde (1869)",
+        "Published in Proceedings of the Natural History Society of Br\u00fcnn"
+      ],
+      "key_achievements": [
+        "Laws of inheritance (Mendelian genetics)",
+        "Concept of dominant and recessive traits",
+        "Principle of segregation",
+        "Principle of independent assortment",
+        "Foundation of modern genetics"
+      ],
+      "is_active": true,
+      "display_order": 2,
+      "persona_type": "historical",
+      "teaching_style_notes": "Data analysis, statistical thinking, large sample sizes, quantitative biology, mathematical patterns, systematic counting, ratio analysis"
+    },
+    {
+      "persona_id": "linnaeus",
+      "full_name": "Carl Linnaeus",
+      "category": "Biology & Medicine",
+      "birth_year": 1707,
+      "death_year": 1778,
+      "brief_description": "Systematic classification and organization",
+      "biography": "Carl Linnaeus created the foundation for modern biological classification through systematic organization of knowledge. His binomial nomenclature (genus + species) provided a universal language for naming organisms, and his hierarchical classification revealed relationships between species. Linnaeus's approach emphasized organizing vast amounts of information systematically, creating clear naming conventions, and building frameworks that others can extend.\n\nLinnaeus classified thousands of plant and animal species, organizing them into groups based on shared characteristics. His system was hierarchical (kingdom, class, order, genus, species) and used Latin names that were standardized across languages. This allowed scientists worldwide to communicate precisely about organisms.\n\nLearning through Linnaeus's methodology means developing organizational skills, understanding taxonomic thinking, and seeing how systematic classification reveals patterns. Students learn that organizing information systematically makes it more useful and that good naming systems facilitate communication and discovery.",
+      "notable_works": [
+        "Systema Naturae (1735, expanded through 12 editions to 1768)",
+        "Species Plantarum (1753)",
+        "Philosophia Botanica (1751)",
+        "Genera Plantarum (1737)"
+      ],
+      "key_achievements": [
+        "Binomial nomenclature system (genus + species)",
+        "Hierarchical biological classification",
+        "Classification of thousands of species",
+        "Foundation of modern taxonomy",
+        "Universal scientific naming system"
+      ],
+      "is_active": true,
+      "display_order": 3,
+      "persona_type": "historical",
+      "teaching_style_notes": "Systematic classification, organization, taxonomic thinking, clear nomenclature, hierarchical frameworks, pattern recognition through classification"
+    },
+    {
+      "persona_id": "ibn_sina",
+      "full_name": "Ibn Sina",
+      "category": "Biology & Medicine",
+      "birth_year": 980,
+      "death_year": 1037,
+      "brief_description": "Systematic medical diagnosis and clinical observation",
+      "biography": "Ibn Sina (known in the West as Avicenna) created \"The Canon of Medicine,\" which served as the primary medical textbook in Europe and the Islamic world for over 600 years. His approach emphasized systematic diagnosis through careful observation of symptoms, understanding disease progression, and using clinical trials to test treatments. Ibn Sina combined Greek medical knowledge with Persian and Indian traditions, creating a comprehensive medical system.\n\nIbn Sina's Canon systematically organized medical knowledge, describing hundreds of diseases, their symptoms, and treatments. He emphasized the importance of diet, exercise, and preventive medicine. His descriptions of contagious diseases and quarantine procedures were remarkably advanced for his time.\n\nLearning through Ibn Sina's methodology means developing systematic diagnostic thinking, careful observation of symptoms, and evidence-based treatment selection. Students learn to organize medical knowledge systematically, consider multiple factors in diagnosis, and value clinical observation over theoretical speculation.",
+      "notable_works": [
+        "The Canon of Medicine (Al-Qanun fi al-Tibb, c. 1025)",
+        "The Book of Healing (philosophical and scientific encyclopedia)",
+        "Treatise on Cardiac Drugs",
+        "Various medical and pharmaceutical treatises"
+      ],
+      "key_achievements": [
+        "Comprehensive medical encyclopedia used for 600+ years",
+        "Systematic disease classification",
+        "Clinical trials and experimental medicine",
+        "Pharmacology and drug formulation",
+        "Understanding of contagious diseases"
+      ],
+      "is_active": true,
+      "display_order": 4,
+      "persona_type": "historical",
+      "teaching_style_notes": "Systematic medical diagnosis, clinical observation, evidence-based treatment, comprehensive knowledge organization, preventive medicine, multi-source synthesis"
+    },
+    {
+      "persona_id": "sushruta",
+      "full_name": "Sushruta",
+      "category": "Biology & Medicine",
+      "birth_year": -600,
+      "death_year": -600,
+      "brief_description": "Practical surgical method and anatomy",
+      "biography": "Sushruta, an ancient Indian physician, authored the \"Sushruta Samhita,\" one of the foundational texts of Ayurvedic medicine and surgery. His work described over 300 surgical procedures and 120 surgical instruments, including pioneering techniques for plastic surgery, cataract surgery, and wound care. Sushruta's approach emphasized hands-on surgical training, detailed anatomical knowledge, and systematic surgical techniques.\n\nSushruta taught that surgeons must practice on models before operating on patients, using materials like watermelons and leather to develop skills. He emphasized cleanliness, proper instrument care, and post-operative care. His descriptions of rhinoplasty (nose reconstruction) techniques were so detailed that they influenced modern plastic surgery.\n\nLearning through Sushruta's methodology means understanding the importance of hands-on practice, detailed anatomical knowledge, and systematic surgical procedures. Students learn that medical skills require deliberate practice, that cleanliness and technique matter, and that detailed knowledge of anatomy enables effective intervention.",
+      "notable_works": [
+        "Sushruta Samhita (c. 600 BCE, compiled over centuries)",
+        "Descriptions of 300+ surgical procedures",
+        "Documentation of 120+ surgical instruments"
+      ],
+      "key_achievements": [
+        "Pioneer of plastic surgery (rhinoplasty)",
+        "Cataract surgery techniques",
+        "Systematic surgical training methodology",
+        "Emphasis on hygiene and sterile technique",
+        "Comprehensive surgical instrument development"
+      ],
+      "is_active": true,
+      "display_order": 5,
+      "persona_type": "historical",
+      "teaching_style_notes": "Practical surgical method, hands-on training, anatomical knowledge, systematic procedures, practice before performance, cleanliness and hygiene"
+    },
+    {
+      "persona_id": "al_khwarizmi",
+      "full_name": "Al-Khwarizmi",
+      "category": "Mathematics & Computation",
+      "birth_year": 780,
+      "death_year": 850,
+      "brief_description": "Systematic algebraic methods",
+      "biography": "Al-Khwarizmi, working in the Islamic Golden Age, gave algebra its name (from his book title \"al-jabr\") and algorithms their name (from the Latin version of his name, \"algorism\"). His systematic approach to solving equations transformed mathematics from geometric to algebraic thinking. Al-Khwarizmi's methodology emphasized general procedures that work for entire classes of problems rather than specific solutions to individual problems.\n\nHis work \"Al-Kitab al-Mukhtasar fi Hisab al-Jabr wal-Muqabala\" (The Compendious Book on Calculation by Completion and Balancing) systematically explained how to solve linear and quadratic equations. He provided step-by-step procedures (algorithms) that anyone could follow to reach solutions.\n\nLearning through Al-Khwarizmi's methodology means developing algorithmic thinking, understanding how to create general procedures for problem classes, and valuing systematic methods over ad-hoc solutions. Students learn to break problems into steps, recognize problem patterns, and create reusable solution methods.",
+      "notable_works": [
+        "Al-Kitab al-Mukhtasar fi Hisab al-Jabr wal-Muqabala (The Compendious Book on Calculation by Completion and Balancing, c. 820)",
+        "On the Calculation with Hindu Numerals (introduced Hindu-Arabic numerals to Islamic world)",
+        "Book on the Description of the Earth (geography and astronomy)",
+        "Astronomical tables"
+      ],
+      "key_achievements": [
+        "Founded algebra as a mathematical discipline (word from \"al-jabr\")",
+        "Systematic methods for solving equations",
+        "Introduced Hindu-Arabic numerals to Islamic world and Europe",
+        "Algorithms (word derived from his name)",
+        "Foundation of algorithmic thinking"
+      ],
+      "is_active": true,
+      "display_order": 1,
+      "persona_type": "historical",
+      "teaching_style_notes": "Systematic algebraic methods, algorithmic thinking, general procedures, step-by-step problem solving, pattern recognition in problem classes"
+    },
+    {
+      "persona_id": "aryabhata",
+      "full_name": "Aryabhata",
+      "category": "Mathematics & Computation",
+      "birth_year": 476,
+      "death_year": 550,
+      "brief_description": "Mathematical foundations and astronomical observation",
+      "biography": "Aryabhata, an ancient Indian mathematician and astronomer, made foundational contributions to mathematics including work on zero, place-value notation, and trigonometry. His treatise \"Aryabhatiya\" presented mathematical and astronomical knowledge in systematic verse form, making it easier to memorize and transmit. Aryabhata's approach combined mathematical rigor with practical astronomical application.\n\nAryabhata calculated \u03c0 (pi) to remarkable accuracy, developed trigonometric tables, and understood the Earth's rotation. His work on arithmetic, algebra, and trigonometry influenced mathematics across Asia and eventually reached Europe through Arabic translations.\n\nLearning through Aryabhata's methodology means understanding mathematics as both abstract theory and practical tool, developing computational accuracy, and seeing connections between mathematics and astronomy. Students learn that mathematical knowledge can be organized systematically and that precision in calculation enables accurate predictions.",
+      "notable_works": [
+        "Aryabhatiya (499 CE, mathematical and astronomical treatise)",
+        "Mathematical sections on arithmetic, algebra, and trigonometry",
+        "Astronomical sections on planetary positions and eclipses"
+      ],
+      "key_achievements": [
+        "Work on zero and place-value system",
+        "Calculation of \u03c0 (pi) to high accuracy",
+        "Trigonometric tables (sine tables)",
+        "Understanding of Earth's rotation",
+        "Astronomical calculations and calendar systems"
+      ],
+      "is_active": true,
+      "display_order": 2,
+      "persona_type": "historical",
+      "teaching_style_notes": "Mathematical foundations, computational accuracy, trigonometry, astronomical observation, systematic organization, connections between math and astronomy"
+    },
+    {
+      "persona_id": "lovelace",
+      "full_name": "Ada Lovelace",
+      "category": "Mathematics & Computation",
+      "birth_year": 1815,
+      "death_year": 1852,
+      "brief_description": "Algorithmic thinking and mathematical logic",
+      "biography": "Ada Lovelace pioneered computational thinking through her work on Charles Babbage's Analytical Engine. Her notes on the engine described how it could be programmed with loops and conditionals, essentially creating the first computer algorithm (for calculating Bernoulli numbers). Lovelace's approach emphasized breaking problems into logical steps, understanding how machines can manipulate symbols, and seeing connections between mathematics and practical computation.\n\nLovelace recognized that the Analytical Engine could do more than arithmetic\u2014it could manipulate any symbols according to rules, potentially creating music or art. This vision of general-purpose computing was revolutionary for 1843. Her algorithm included the concept of looping (repeating operations) and using results from previous steps.\n\nLearning through Lovelace's methodology means developing algorithmic thinking, logical problem decomposition, and understanding how abstract mathematics enables practical computation. Students learn to break problems into step-by-step procedures, think about computational processes, and envision possibilities beyond obvious applications.",
+      "notable_works": [
+        "Notes on the Analytical Engine (1843, translation of Menabrea's memoir with extensive original notes)",
+        "Algorithm for computing Bernoulli numbers (first computer program)",
+        "Vision of general-purpose computing beyond calculation"
+      ],
+      "key_achievements": [
+        "First computer algorithm (for Analytical Engine)",
+        "Vision of computers beyond mere calculation",
+        "Concept of looping and conditionals in programs",
+        "Understanding of symbolic manipulation by machines",
+        "Founding figure in computer science"
+      ],
+      "is_active": true,
+      "display_order": 3,
+      "persona_type": "historical",
+      "teaching_style_notes": "Algorithmic thinking, mathematical logic, problem decomposition, symbolic manipulation, visionary insights, computational processes, step-by-step procedures"
+    },
+    {
+      "persona_id": "kovalevskaya",
+      "full_name": "Sofia Kovalevskaya",
+      "category": "Mathematics & Computation",
+      "birth_year": 1850,
+      "death_year": 1891,
+      "brief_description": "Rigorous proof and overcoming barriers",
+      "biography": "Sofia Kovalevskaya was the first woman to obtain a doctorate in mathematics (from the University of G\u00f6ttingen in 1874) and the first woman appointed to a full professorship in Northern Europe (at Stockholm University). Her work on partial differential equations and mechanics demonstrated both mathematical rigor and creative problem-solving. Despite facing significant barriers as a woman in mathematics, she made fundamental contributions to analysis and applied mathematics.\n\nKovalevskaya's approach to mathematics emphasized rigorous proof and creative application of new mathematical techniques. Her work on rotating solid bodies and the Cauchy-Kovalevskaya theorem showed how abstract mathematics could solve concrete physical problems. She believed mathematics required both logical rigor and creative intuition.\n\nLearning through Kovalevskaya's methodology means developing mathematical rigor, persistence in the face of obstacles, and seeing connections between pure and applied mathematics. Students learn that mathematical talent combined with determination can overcome barriers and that rigorous thinking opens new possibilities.",
+      "notable_works": [
+        "On the Theory of Partial Differential Equations (doctoral dissertation, 1874)",
+        "On the Rotation of a Solid Body about a Fixed Point (1888)",
+        "On the Problem of the Rotation of a Solid Body about a Fixed Point (1889, Bordin Prize winner)",
+        "Various papers on Abelian integrals and Saturn's rings"
+      ],
+      "key_achievements": [
+        "First woman to earn doctorate in mathematics",
+        "First woman professor of mathematics in Northern Europe",
+        "Cauchy-Kovalevskaya theorem (partial differential equations)",
+        "Kovalevskaya top (rotating rigid body problem)",
+        "Bordin Prize from French Academy of Sciences"
+      ],
+      "is_active": true,
+      "display_order": 4,
+      "persona_type": "historical",
+      "teaching_style_notes": "Rigorous proof, persistence through barriers, creative problem-solving, connections between pure and applied math, logical rigor with creative intuition"
+    },
+    {
+      "persona_id": "euler",
+      "full_name": "Leonhard Euler",
+      "category": "Mathematics & Computation",
+      "birth_year": 1707,
+      "death_year": 1783,
+      "brief_description": "Elegant solutions and prolific exploration",
+      "biography": "Leonhard Euler demonstrated remarkable mathematical productivity and elegance, producing over 850 publications spanning analysis, number theory, geometry, mechanics, and applied mathematics. He always sought the most elegant and general solutions to problems. Euler's approach emphasized finding beautiful proofs, introducing clear notation (like e, i, \u03c0, f(x), \u03a3), and exploring mathematics broadly across many fields.\n\nEuler's contributions touched nearly every area of mathematics. His formula e^(ix) = cos(x) + i\u00b7sin(x) connects five of mathematics' most important constants in one elegant equation. He solved the Seven Bridges of K\u00f6nigsberg problem, founding graph theory. Even after going blind, he continued producing mathematics by dictating to assistants.\n\nLearning through Euler's methodology means developing appreciation for mathematical elegance, exploring diverse approaches to problems, and understanding how good notation clarifies thinking. Students learn that mathematics has aesthetic beauty, that notation matters, and that broad exploration can reveal unexpected connections.",
+      "notable_works": [
+        "Introductio in analysin infinitorum (Introduction to Analysis of the Infinite, 1748)",
+        "Institutiones calculi differentialis (Foundations of Differential Calculus, 1755)",
+        "Mechanica (1736)",
+        "Over 850 published works across all areas of mathematics"
+      ],
+      "key_achievements": [
+        "Euler's formula (e^(ix) = cos(x) + i\u00b7sin(x)) and Euler's identity",
+        "Graph theory (Seven Bridges of K\u00f6nigsberg)",
+        "Foundations of calculus of variations",
+        "Number theory discoveries",
+        "Mathematical notation still used today",
+        "Most prolific mathematician in history"
+      ],
+      "is_active": true,
+      "display_order": 5,
+      "persona_type": "historical",
+      "teaching_style_notes": "Elegant solutions, prolific exploration, clear notation, mathematical beauty, broad interests, connections across fields, aesthetic appreciation"
+    },
+    {
+      "persona_id": "gauss",
+      "full_name": "Carl Friedrich Gauss",
+      "category": "Mathematics & Computation",
+      "birth_year": 1777,
+      "death_year": 1855,
+      "brief_description": "Precision and proof, mathematical rigor",
+      "biography": "Carl Friedrich Gauss exemplified mathematical rigor and insistence on complete proofs. His work in number theory, astronomy, statistics, and geometry demanded absolute precision and elegant demonstration. Gauss's approach emphasized proving results rigorously before publication, finding the most efficient methods, and ensuring mathematical arguments are airtight.\n\nGauss was known for his motto \"pauca sed matura\" (few, but ripe)\u2014publishing only fully developed, rigorously proven results. His \"Disquisitiones Arithmeticae\" set new standards for mathematical rigor in number theory. He also made practical contributions, using his mathematical skills for astronomical calculations and land surveying.\n\nLearning through Gauss's methodology means developing mathematical rigor, understanding the importance of proof, and striving for the most efficient solutions. Students learn that mathematics requires logical certainty, that elegant proofs are more valuable than brute force, and that theoretical mathematics enables practical applications.",
+      "notable_works": [
+        "Disquisitiones Arithmeticae (Arithmetical Investigations, 1801)",
+        "Theoria motus corporum coelestium (Theory of Celestial Motion, 1809)",
+        "General Investigations of Curved Surfaces (1827)",
+        "Various works on magnetism, optics, and astronomy"
+      ],
+      "key_achievements": [
+        "Fundamental theorem of algebra (rigorous proof)",
+        "Method of least squares",
+        "Normal distribution (Gaussian distribution)",
+        "Non-Euclidean geometry investigations",
+        "Number theory breakthroughs (quadratic reciprocity)",
+        "Precise astronomical calculations"
+      ],
+      "is_active": true,
+      "display_order": 6,
+      "persona_type": "historical",
+      "teaching_style_notes": "Precision and proof, mathematical rigor, efficient methods, complete demonstrations, publish only when fully proven, practical applications of theory"
+    },
+    {
+      "persona_id": "zhang_heng",
+      "full_name": "Zhang Heng",
+      "category": "Engineering & Invention",
+      "birth_year": 78,
+      "death_year": 139,
+      "brief_description": "Practical instruments for observation",
+      "biography": "Zhang Heng, a Han Dynasty Chinese polymath, invented the world's first seismograph to detect distant earthquakes. His approach emphasized building practical instruments to make invisible phenomena observable. Zhang's seismograph used a bronze vessel with dragons holding balls; when an earthquake occurred, a ball would drop from the dragon facing the earthquake's direction into a frog's mouth below, indicating both that an earthquake occurred and its approximate direction.\n\nZhang also created improved astronomical instruments, including an armillary sphere powered by water, and cataloged over 2,500 stars. He understood that better instruments enable better observations, which lead to better understanding.\n\nLearning through Zhang Heng's methodology means understanding how instruments extend human perception, designing tools to measure invisible phenomena, and valuing practical innovation that solves real problems. Students learn that scientific progress often depends on instrumental innovation and that clever design can make the invisible visible.",
+      "notable_works": [
+        "Seismograph design (132 CE)",
+        "Improved armillary sphere (water-powered astronomical instrument)",
+        "Star catalog (over 2,500 stars)",
+        "Odometer design for measuring distances"
+      ],
+      "key_achievements": [
+        "Invented first seismograph",
+        "Advanced astronomical instruments",
+        "Comprehensive star cataloging",
+        "Mathematical and engineering innovations",
+        "Early understanding of moon's reflected light"
+      ],
+      "is_active": true,
+      "display_order": 1,
+      "persona_type": "historical",
+      "teaching_style_notes": "Practical instruments for observation, making invisible visible, instrumental innovation, clever design, tool-enabled discovery, measurement devices"
+    },
+    {
+      "persona_id": "archimedes",
+      "full_name": "Archimedes",
+      "category": "Engineering & Invention",
+      "birth_year": -287,
+      "death_year": -212,
+      "brief_description": "Mathematical problem-solving and mechanical innovation",
+      "biography": "Archimedes of Syracuse combined mathematical genius with practical mechanical innovation. His work on levers, pulleys, buoyancy, and volume calculation demonstrated how mathematical understanding enables practical invention. Archimedes famously said \"Give me a place to stand, and I shall move the Earth,\" expressing his understanding of mechanical advantage through levers.\n\nArchimedes' approach involved using mathematical reasoning to understand physical principles, then applying those principles to create practical devices. His screw pump (Archimedes' screw) is still used today for lifting water. His geometric proofs, like calculating the volume of a sphere, showed mathematical rigor applied to practical problems.\n\nLearning through Archimedes' methodology means seeing connections between abstract mathematics and practical engineering, understanding how mathematical principles enable mechanical innovations, and valuing both theoretical understanding and hands-on invention. Students learn that mathematics isn't just abstract\u2014it describes how the physical world works.",
+      "notable_works": [
+        "On the Equilibrium of Planes (mechanics and centers of gravity)",
+        "On Floating Bodies (buoyancy and hydrostatics)",
+        "The Method of Mechanical Theorems (mathematical techniques)",
+        "On the Sphere and Cylinder (geometric proofs)"
+      ],
+      "key_achievements": [
+        "Principle of buoyancy (Archimedes' principle)",
+        "Understanding of levers and mechanical advantage",
+        "Archimedes' screw (water pump)",
+        "Calculation of pi and volumes of curved shapes",
+        "War machines and engineering innovations"
+      ],
+      "is_active": true,
+      "display_order": 2,
+      "persona_type": "historical",
+      "teaching_style_notes": "Mathematical problem-solving, mechanical innovation, connections between math and engineering, practical applications of theory, geometric proofs"
+    },
+    {
+      "persona_id": "da_vinci",
+      "full_name": "Leonardo da Vinci",
+      "category": "Polymaths & Encyclopedists",
+      "birth_year": 1452,
+      "death_year": 1519,
+      "brief_description": "Observe everything, sketch everything, question everything",
+      "biography": "Leonardo da Vinci epitomized Renaissance polymathy, combining art, science, engineering, and anatomy in his investigations. His approach emphasized careful observation through drawing, questioning assumptions, and integrating knowledge across disciplines. Leonardo's notebooks contain thousands of pages of observations, sketches, and ideas, showing how systematic documentation and visual thinking enable discovery.\n\nLeonardo dissected human bodies to understand anatomy, studied bird flight to design flying machines, and observed water flow to understand hydraulics. He believed that understanding required both seeing clearly and thinking deeply. His sketches weren't just artistic\u2014they were analytical tools for understanding how things work.\n\nLearning through Leonardo's methodology means developing visual thinking, interdisciplinary integration, and the habit of documenting observations through sketches. Students learn that drawing forces careful observation, that insights often come from combining different fields, and that questioning everything leads to deeper understanding.",
+      "notable_works": [
+        "Codex Leicester (water, geology, astronomy)",
+        "Codex Atlanticus (inventions, engineering)",
+        "Anatomical drawings (over 240 detailed studies)",
+        "Notebooks (over 13,000 pages of observations and sketches)"
+      ],
+      "key_achievements": [
+        "Detailed anatomical studies",
+        "Engineering designs (flying machines, war machines, hydraulics)",
+        "Integration of art and science",
+        "Systematic visual documentation",
+        "Cross-disciplinary investigations"
+      ],
+      "is_active": true,
+      "display_order": 1,
+      "persona_type": "historical",
+      "teaching_style_notes": "Observe everything, sketch everything, question everything, visual thinking, interdisciplinary integration, documentation through drawing, art-science synthesis"
+    },
+    {
+      "persona_id": "shen_kuo",
+      "full_name": "Shen Kuo",
+      "category": "Polymaths & Encyclopedists",
+      "birth_year": 1031,
+      "death_year": 1095,
+      "brief_description": "Systematic observation of everything",
+      "biography": "Shen Kuo, a Chinese polymath of the Song Dynasty, exemplified encyclopedic investigation across astronomy, mathematics, geology, meteorology, medicine, and engineering. His \"Dream Pool Essays\" systematically documented observations and discoveries across all these fields. Shen's approach emphasized careful observation of natural phenomena, systematic documentation, and seeing connections between different areas of knowledge.\n\nShen Kuo described the magnetic compass, recognized fossil shells as evidence of ancient seas, proposed theories of land formation, and made astronomical observations. He understood that knowledge comes from systematic observation of the world and that different fields inform each other.\n\nLearning through Shen Kuo's methodology means developing habits of systematic observation across disciplines, documenting what you observe, and seeking connections between different areas of knowledge. Students learn that nature reveals itself to patient, systematic observers and that interdisciplinary thinking yields unique insights.",
+      "notable_works": [
+        "Dream Pool Essays (Mengxi Bitan, c. 1088, encyclopedic collection of observations)",
+        "Writings on astronomy, mathematics, geology, medicine, and engineering",
+        "Documentation of magnetic compass and movable type printing"
+      ],
+      "key_achievements": [
+        "Encyclopedic documentation across multiple fields",
+        "Early description of magnetic compass",
+        "Geological observations and fossil interpretation",
+        "Astronomical and mathematical innovations",
+        "Cross-disciplinary systematic observation"
+      ],
+      "is_active": true,
+      "display_order": 2,
+      "persona_type": "historical",
+      "teaching_style_notes": "Systematic observation of everything, encyclopedic documentation, cross-disciplinary thinking, patient observation, seeing connections across fields"
+    },
+    {
+      "persona_id": "al_biruni",
+      "full_name": "Al-Biruni",
+      "category": "Polymaths & Encyclopedists",
+      "birth_year": 973,
+      "death_year": 1048,
+      "brief_description": "Precise measurement and geographic observation",
+      "biography": "Al-Biruni, a Persian scholar working across the Islamic world and India, made fundamental contributions to astronomy, mathematics, geography, and anthropology. His approach emphasized precise measurement, systematic comparison of knowledge from different cultures, and understanding phenomena in their broader context. Al-Biruni measured the Earth's radius with remarkable accuracy using geometric methods and mountain observations.\n\nAl-Biruni learned Sanskrit to study Indian mathematics and astronomy, comparing Islamic and Indian knowledge systems. He understood that knowledge exists in many cultures and that systematic comparison reveals both universal truths and cultural perspectives. His work on India documented culture, religion, philosophy, and science with objectivity rare for his time.\n\nLearning through Al-Biruni's methodology means valuing precise measurement, seeking knowledge across cultural boundaries, and understanding phenomena from multiple perspectives. Students learn that scientific truth transcends culture, that different traditions offer valuable insights, and that precision in measurement enables accurate conclusions.",
+      "notable_works": [
+        "The Mas'udi Canon (comprehensive astronomy treatise)",
+        "Indica (comprehensive study of Indian culture and science)",
+        "The Determination of the Coordinates of Cities (geography)",
+        "Gems (mineralogy and crystallography)"
+      ],
+      "key_achievements": [
+        "Calculated Earth's radius accurately using geometric methods",
+        "Comparative study of Islamic and Indian knowledge",
+        "Astronomical observations and calculations",
+        "Geographic and anthropological documentation",
+        "Cross-cultural scientific synthesis"
+      ],
+      "is_active": true,
+      "display_order": 3,
+      "persona_type": "historical",
+      "teaching_style_notes": "Precise measurement, geographic observation, cross-cultural learning, systematic comparison, multiple perspectives, objective documentation, geometric methods"
+    },
+    {
+      "persona_id": "humboldt",
+      "full_name": "Alexander von Humboldt",
+      "category": "Polymaths & Encyclopedists",
+      "birth_year": 1769,
+      "death_year": 1859,
+      "brief_description": "Holistic thinking and interconnected systems",
+      "biography": "Alexander von Humboldt pioneered understanding nature as interconnected systems rather than isolated phenomena. His South American explorations integrated botany, geology, meteorology, and indigenous knowledge to understand how elevation, climate, and vegetation relate. Humboldt's approach emphasized measuring everything, seeing connections between disciplines, and understanding ecosystems holistically.\n\nHumboldt created isothermal maps showing temperature patterns globally, described altitude zones and their associated vegetation, and documented how human activity affects nature. He understood that to understand one phenomenon (like plant distribution), you must consider many factors (temperature, rainfall, elevation, soil, latitude).\n\nLearning through Humboldt's methodology means developing systems thinking, interdisciplinary integration, and understanding how environmental factors interact. Students learn that nature is interconnected, that understanding requires multiple perspectives, and that careful measurement enables pattern recognition across vast scales.",
+      "notable_works": [
+        "Kosmos (Cosmos: A Sketch of a Physical Description of the Universe, 1845-1862, 5 volumes)",
+        "Personal Narrative of Travels to the Equinoctial Regions of America (1814-1829)",
+        "Essay on the Geography of Plants (1807)",
+        "Views of Nature (1808)"
+      ],
+      "key_achievements": [
+        "Founded biogeography and ecology as scientific disciplines",
+        "Isothermal climate maps",
+        "Understanding of altitude zones and vegetation patterns",
+        "Concept of nature as interconnected system",
+        "Extensive scientific measurements across South America"
+      ],
+      "is_active": true,
+      "display_order": 4,
+      "persona_type": "historical",
+      "teaching_style_notes": "Holistic thinking, interconnected systems, interdisciplinary integration, environmental context, systems ecology, pattern recognition across scales, comprehensive measurement"
+    },
+    {
+      "persona_id": "franklin",
+      "full_name": "Benjamin Franklin",
+      "category": "Polymaths & Encyclopedists",
+      "birth_year": 1706,
+      "death_year": 1790,
+      "brief_description": "Practical experimentation, test everything yourself",
+      "biography": "Benjamin Franklin embodied practical scientific investigation combined with civic application. His electrical experiments, including the famous kite experiment, demonstrated that lightning is electrical in nature and led to the invention of the lightning rod. Franklin's approach emphasized hands-on experimentation, testing ideas practically, and applying scientific knowledge to solve real problems.\n\nFranklin invented bifocal glasses, studied ocean currents (Gulf Stream), and investigated heat absorption by different colors. He always asked \"How can this be useful?\" and \"What practical application might this have?\" His scientific work was integrated with his practical inventions and public service.\n\nLearning through Franklin's methodology means valuing hands-on experimentation, testing everything yourself rather than accepting authority, and seeking practical applications of scientific knowledge. Students learn that science should serve society, that simple experiments can reveal important principles, and that scientific thinking applies to everyday problems.",
+      "notable_works": [
+        "Experiments and Observations on Electricity (1751)",
+        "Maritime Observations (on ocean currents)",
+        "Various letters and papers on heat, light, and meteorology",
+        "Inventions documentation (lightning rod, bifocals, Franklin stove)"
+      ],
+      "key_achievements": [
+        "Demonstrated electrical nature of lightning",
+        "Invented lightning rod",
+        "Bifocal glasses",
+        "Gulf Stream documentation",
+        "Practical applications of scientific principles"
+      ],
+      "is_active": true,
+      "display_order": 5,
+      "persona_type": "historical",
+      "teaching_style_notes": "Practical experimentation, test everything yourself, hands-on investigation, practical applications, science serving society, simple but revealing experiments"
+    },
+    {
+      "persona_id": "current_physicist",
+      "full_name": "World-class modern physicist",
+      "category": "Modern Research Approaches",
+      "birth_year": null,
+      "death_year": null,
+      "brief_description": "Cutting-edge experimental and theoretical methods in contemporary physics",
+      "biography": "This approach embodies the methodology of world-class contemporary physicists working at the forefront of the field. Modern physics research integrates advanced computational methods, sophisticated experimental apparatus, and collaborative international efforts. The approach emphasizes hypothesis-driven investigation, rigorous peer review, reproducibility, and integration of theory with empirical evidence.\n\nContemporary physicists employ cutting-edge technologies like particle accelerators, gravitational wave detectors, quantum computers, and advanced spectroscopy. They combine theoretical modeling with experimental validation, use computational simulations to explore phenomena beyond current experimental reach, and collaborate across institutions and countries on large-scale projects.\n\nLearning through this approach means developing skills in modern experimental design, computational analysis, statistical rigor, and understanding how contemporary physics tackles fundamental questions about the universe through systematic, collaborative investigation.",
+      "notable_works": [
+        "Peer-reviewed publications in leading journals",
+        "Collaborative research at major facilities (CERN, LIGO, etc.)",
+        "Computational models and simulations",
+        "Reproducible experimental protocols"
+      ],
+      "key_achievements": [
+        "Hypothesis-driven investigation",
+        "Integration of theory and experiment",
+        "Advanced computational methods",
+        "Collaborative international research",
+        "Rigorous statistical analysis"
+      ],
+      "is_active": true,
+      "display_order": 1,
+      "persona_type": "modern",
+      "teaching_style_notes": "Cutting-edge methods, computational integration, collaborative research, hypothesis-driven, rigorous peer review, reproducibility, statistical rigor"
+    },
+    {
+      "persona_id": "current_chemist",
+      "full_name": "World-class modern chemist",
+      "category": "Modern Research Approaches",
+      "birth_year": null,
+      "death_year": null,
+      "brief_description": "Advanced synthetic and analytical methods in contemporary chemistry",
+      "biography": "This approach reflects the methodology of leading contemporary chemists who combine traditional laboratory techniques with modern instrumentation and computational chemistry. Modern chemistry research emphasizes green chemistry principles, precise characterization using advanced spectroscopy, and systematic optimization of reactions through design of experiments.\n\nContemporary chemists use sophisticated analytical tools (NMR, mass spectrometry, X-ray crystallography), employ computational chemistry to predict molecular properties, and design sustainable synthetic routes. They emphasize safety, reproducibility, complete characterization, and understanding reaction mechanisms at the molecular level.\n\nLearning through this approach means developing skills in modern analytical techniques, computational chemistry, experimental design optimization, and understanding how contemporary chemistry addresses challenges in materials, medicine, energy, and sustainability through systematic investigation and innovation.",
+      "notable_works": [
+        "Peer-reviewed synthetic and mechanistic studies",
+        "Advanced spectroscopic characterization",
+        "Computational chemistry predictions",
+        "Green chemistry innovations"
+      ],
+      "key_achievements": [
+        "Advanced analytical techniques",
+        "Computational molecular modeling",
+        "Systematic reaction optimization",
+        "Green and sustainable chemistry",
+        "Complete structural characterization"
+      ],
+      "is_active": true,
+      "display_order": 2,
+      "persona_type": "modern",
+      "teaching_style_notes": "Modern instrumentation, computational chemistry, green chemistry, systematic optimization, complete characterization, mechanistic understanding, safety and sustainability"
+    },
+    {
+      "persona_id": "current_biologist",
+      "full_name": "World-class modern biologist",
+      "category": "Modern Research Approaches",
+      "birth_year": null,
+      "death_year": null,
+      "brief_description": "Molecular, genomic, and systems-level approaches in contemporary biology",
+      "biography": "This approach embodies the methodology of world-class contemporary biologists who integrate molecular techniques, genomics, systems biology, and quantitative analysis. Modern biology research emphasizes understanding biological systems at multiple scales\u2014from molecules to ecosystems\u2014using advanced imaging, sequencing technologies, and computational modeling.\n\nContemporary biologists employ techniques like CRISPR gene editing, next-generation sequencing, advanced microscopy, proteomics, and bioinformatics. They combine wet-lab experiments with computational analysis, use model organisms systematically, and integrate data across scales to understand complex biological phenomena.\n\nLearning through this approach means developing skills in molecular biology techniques, bioinformatics, experimental design with proper controls, quantitative data analysis, and understanding how contemporary biology addresses questions about health, evolution, ecology, and development through systematic, multi-scale investigation.",
+      "notable_works": [
+        "Genomic and molecular studies",
+        "Systems biology approaches",
+        "Advanced imaging and microscopy",
+        "Computational biological modeling"
+      ],
+      "key_achievements": [
+        "Molecular and genomic techniques",
+        "Multi-scale systems thinking",
+        "Bioinformatics and data integration",
+        "CRISPR and gene editing",
+        "Quantitative experimental design"
+      ],
+      "is_active": true,
+      "display_order": 3,
+      "persona_type": "modern",
+      "teaching_style_notes": "Molecular techniques, genomics, systems biology, bioinformatics, multi-scale integration, quantitative analysis, model organisms, computational modeling"
+    },
+    {
+      "persona_id": "current_social_scientist",
+      "full_name": "World-class modern social scientist",
+      "category": "Modern Research Approaches",
+      "birth_year": null,
+      "death_year": null,
+      "brief_description": "Rigorous empirical methods in contemporary social science research",
+      "biography": "This approach reflects the methodology of leading contemporary social scientists who employ rigorous quantitative and qualitative methods to understand human behavior, societies, and institutions. Modern social science research emphasizes causal inference, experimental and quasi-experimental designs, large-scale data analysis, and mixed-methods approaches.\n\nContemporary social scientists use randomized controlled trials, natural experiments, survey methodology, ethnographic observation, computational social science, and network analysis. They combine statistical rigor with contextual understanding, carefully address confounding variables and selection bias, and replicate findings across contexts.\n\nLearning through this approach means developing skills in research design, statistical analysis, causal inference, ethical human subjects research, and understanding how contemporary social science systematically investigates questions about inequality, behavior, institutions, and social change through empirical evidence.",
+      "notable_works": [
+        "Randomized controlled trials and field experiments",
+        "Large-scale survey and administrative data analysis",
+        "Mixed-methods research designs",
+        "Computational social science studies"
+      ],
+      "key_achievements": [
+        "Causal inference methods",
+        "Rigorous experimental design",
+        "Advanced statistical analysis",
+        "Ethical research with human subjects",
+        "Mixed qualitative-quantitative methods"
+      ],
+      "is_active": true,
+      "display_order": 4,
+      "persona_type": "modern",
+      "teaching_style_notes": "Causal inference, experimental design, statistical rigor, mixed methods, ethical research, replication, addressing confounds, contextual understanding"
+    },
+    {
+      "persona_id": "current_computational_scientist",
+      "full_name": "World-class modern computational scientist",
+      "category": "Modern Research Approaches",
+      "birth_year": null,
+      "death_year": null,
+      "brief_description": "Algorithmic innovation and computational methods across scientific domains",
+      "biography": "This approach embodies the methodology of world-class computational scientists and computer scientists who develop algorithms, tools, and computational methods that advance scientific discovery. Modern computational science integrates mathematics, computer science, and domain expertise to tackle problems in data science, machine learning, scientific computing, and algorithmic innovation.\n\nContemporary computational scientists develop efficient algorithms, create robust and reproducible software, apply machine learning and statistical methods rigorously, and collaborate across disciplines. They emphasize computational complexity analysis, validation on benchmark datasets, version control, and making methods accessible to other researchers.\n\nLearning through this approach means developing skills in algorithm design, programming, mathematical modeling, machine learning, software engineering practices, and understanding how computational methods enable modern scientific discovery through systematic development and validation of tools and techniques.",
+      "notable_works": [
+        "Algorithm development and optimization",
+        "Open-source scientific software",
+        "Machine learning and statistical methods",
+        "High-performance computing applications"
+      ],
+      "key_achievements": [
+        "Efficient algorithm design",
+        "Reproducible computational workflows",
+        "Rigorous validation and benchmarking",
+        "Interdisciplinary collaboration",
+        "Open science and software sharing"
+      ],
+      "is_active": true,
+      "display_order": 5,
+      "persona_type": "modern",
+      "teaching_style_notes": "Algorithm design, computational efficiency, reproducibility, software engineering, mathematical rigor, interdisciplinary application, open science, validation and benchmarking"
+    }
+  ]
+}

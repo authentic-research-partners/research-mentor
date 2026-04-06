@@ -1,0 +1,564 @@
+# Personal Research Mentor configuration
+#
+# SINGLE SOURCE OF TRUTH for all default values.
+# This file is bundled with the package and loaded by config.py.
+#
+# Override order (highest priority first):
+# 1. Environment variables (RESEARCH_MENTOR_*)
+# 2. User config: <data_dir>/config.toml  (default ~/.research-mentor/config.toml)
+# 3. This bundled default (lowest priority)
+
+[server]
+host = "127.0.0.1"
+port = 8080
+
+# SSE stream timeouts (seconds)
+# Inactivity timeout: sliding window — if no graph activity for this long, stream is cancelled.
+# Increase if vLLM structured calls regularly take >30s (e.g., on slower GPUs).
+stream_inactivity_timeout = 90
+# Global timeout: absolute safety limit for the entire stream.
+stream_global_timeout = 600
+
+[ui]
+port = 8502
+
+[logging]
+# Log file path (relative to ~/.research-mentor/, or absolute)
+file = "logs/mentor.log"
+# Rotation: when to create a new log file
+# Options: file size ("10 MB"), time ("1 day", "12 hours"), or "1 week"
+rotation = "10 MB"
+# Retention: how many old log files to keep
+retention = 5
+# Log level for file output ("DEBUG", "INFO", "WARNING", "ERROR")
+level = "DEBUG"
+
+[llm]
+# Backend: "claude-cli" (default), "vllm", or "api"
+backend = "claude-cli"
+
+# Max retries for structured_call when Pydantic validation fails (missing fields, wrong types).
+# Each retry feeds the validation error back to the model and asks it to fix the JSON.
+# 0 = no retries (fail immediately), 3 = up to 3 retries before raising.
+structured_call_max_retries = 2
+
+[llm.claude_cli]
+# --- Model ---
+#
+# Aliases: "sonnet" (fast, recommended), "opus" (best quality), "haiku" (cheapest)
+#   → always resolves to the LATEST version (changes when Anthropic updates)
+#
+# Full model IDs pin to a specific version (recommended for reproducibility):
+#   "claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5-20251001"
+#
+# See: https://docs.anthropic.com/en/docs/about-claude/models
+#
+model = "sonnet"
+
+# --- Thinking effort ---
+#
+# Controls depth of reasoning before responding.
+#   "low"    — fast, minimal thinking (good for simple routing/validation)
+#   "medium" — balanced (default, good for teaching and structured output)
+#   "high"   — deep reasoning (best for complex pedagogical guidance)
+#
+# Maps to Claude CLI --effort flag. Higher effort = more tokens = slower + better.
+# For research mentoring, "medium" provides good quality/speed tradeoff.
+#
+effort = "medium"
+
+# Request timeout in seconds
+timeout = 120
+
+# Max parallel Claude CLI subprocesses (memory-bound: ~500MB each)
+max_parallel_processes = 4
+
+# Max requests per minute
+# Claude Pro: ~50 RPM, Max: higher. Set conservatively to avoid 429 errors.
+max_requests_per_minute = 20
+
+[llm.vllm]
+# OpenAI-compatible API base URL
+api_base = "http://localhost:5001/v1"
+
+# Active model — must match a key in [llm.vllm.models.*] below.
+# Change this single value to switch models.
+active_model = "gemma3-12b-fp8"
+
+# Request timeout in seconds (increase if vLLM is shared/busy)
+timeout = 600
+
+# --- Token limits ---
+#
+# max_input_tokens: Maximum input tokens (prompts + conversation history)
+#   16K covers ~1,500 line files (90-95th percentile of Python files)
+#
+# max_completion_tokens: Maximum output tokens (thinking + response for Qwen3,
+#   just response for Gemma3). 4K is sufficient for both.
+#
+# vLLM max_model_len = max_input_tokens + max_completion_tokens + 256 padding
+# With FP8 KV cache, 20K context uses ~1.5GB VRAM, fits 16GB GPUs
+#
+max_input_tokens = 16000
+max_completion_tokens = 4096
+
+# GPU memory fraction for vLLM (0.0–1.0).
+# 0.9 uses most of VRAM while leaving some headroom for OS overhead.
+gpu_memory_utilization = 0.9
+
+# Disable CUDA graph capture and torch.compile optimizations.
+# May help if vLLM starts but never responds to requests, which can happen
+# on some WSL2 setups. Small inference overhead, usually not noticeable.
+enforce_eager = false
+
+# --- Container mode (alternative to native vLLM install) ---
+# Run vLLM in a Podman/Docker container instead of installing it natively.
+# Container handles all vLLM + CUDA dependencies — no pip install vllm needed.
+container_runtime = "podman"    # "podman" (recommended) or "docker"
+container_name = ""                     # empty = auto from model name (e.g. "research-mentor-vllm-gemma3-12b-fp8")
+container_image = "docker.io/vllm/vllm-openai:latest"
+
+# ============================================================================
+# Model profiles
+# ============================================================================
+#
+# Each profile defines: hf_model, sampling parameters, and thinking_tag.
+#
+# thinking_tag: XML tag name the model wraps reasoning in (e.g. "think" → <think>...</think>).
+#   Empty string "" means the model does not produce thinking blocks.
+#   The code uses this to buffer/strip thinking content from responses.
+
+[llm.vllm.models.gemma3-12b-fp8]
+hf_model = "RedHatAI/gemma-3-12b-it-FP8-dynamic"
+thinking_tag = ""
+temperature = 0.7
+top_p = 0.9
+top_k = 40
+
+[llm.vllm.models.qwen3-8b-fp8]
+hf_model = "RedHatAI/Qwen3-8B-FP8-dynamic"
+thinking_tag = "think"
+reasoning_parser = "qwen3"
+# DO NOT use temperature=0 with Qwen3 — causes endless repetitions
+temperature = 0.6
+top_p = 0.95
+top_k = 20
+
+[llm.vllm.models.qwen3-14b-fp8]
+hf_model = "RedHatAI/Qwen3-14B-FP8-dynamic"
+thinking_tag = "think"
+reasoning_parser = "qwen3"
+temperature = 0.6
+top_p = 0.95
+top_k = 20
+
+[llm.api]
+# Remote OpenAI-compatible API backend (OpenAI, Gemini, Anthropic, etc.)
+# Lets you bring your own API key — potentially much cheaper than Claude Max
+# for light usage.
+provider = "openai"                           # display name for tracking
+base_url = "https://api.openai.com/v1"        # OpenAI-compatible endpoint
+model = "gpt-4o"
+api_key_file = "~/.research-mentor/api_key"   # plain text, one line
+thinking_tag = ""
+temperature = 0.7
+top_p = 0.9
+max_completion_tokens = 4096
+timeout = 120
+
+[database]
+# SQLite database path (relative to ~/.research-mentor/)
+path = "research_mentor.db"
+
+# Connection pool size — number of pre-opened, reusable connections.
+# SQLite serializes writes regardless, but WAL mode allows concurrent reads.
+# 4 covers typical parallel graph node execution. More connections don't help
+# writes and add file descriptor overhead.
+pool_size = 4
+
+[storage]
+# Directory for uploaded artifact files (absolute, or relative to ~/.research-mentor/)
+artifacts_dir = "artifacts"
+# Maximum upload size in bytes (default: 50 MB)
+max_upload_bytes = 52428800
+
+# ============================================================================
+# Vision (image understanding)
+# ============================================================================
+#
+# Used to generate text descriptions of uploaded images (PNG, JPG, etc.)
+# when text extraction produces no text. The description flows through the
+# existing chunk → embed → store pipeline for artifact_search.
+#
+# Uses Qwen3-VL-2B-Instruct (~4GB RAM on CPU, ~15-30s per image).
+# Always runs on CPU to avoid competing with vLLM for GPU VRAM.
+
+[vision]
+# Enable/disable vision for artifact interpretation
+enabled = true
+
+# Backend: "local", "claude-cli", or "api"
+#   local     — text extraction (pdfplumber/python-docx/csv) + Qwen3-VL-2B on CPU (~15-30s, free/offline)
+#   claude-cli — Claude Code CLI reads the file directly (excellent quality, uses subscription)
+#   api       — OpenAI-compatible vision API (bring your own key, independent of chat LLM)
+backend = "local"
+
+# --- Local backend (text extraction + Qwen3-VL-2B on CPU) ---
+# HuggingFace model name (downloaded on first use, ~4GB)
+model = "Qwen/Qwen3-VL-2B-Instruct"
+# Maximum tokens to generate for image description
+max_new_tokens = 512
+
+# --- API backend (OpenAI-compatible vision API, independent credentials) ---
+api_provider = ""                                    # display name (e.g. "openai", "google")
+api_base_url = ""                                    # OpenAI-compatible endpoint
+api_model = ""                                       # model name (e.g. "gpt-4o", "gemini-2.0-flash")
+api_key_file = "~/.research-mentor/vision_api_key"   # plain text, one line
+api_max_tokens = 1024                                # max completion tokens for vision call
+api_timeout = 120                                    # request timeout in seconds
+
+# ============================================================================
+# GROBID (academic PDF extraction)
+# ============================================================================
+#
+# GROBID provides structured extraction of academic papers with proper heading
+# hierarchy, reference parsing, and metadata. Requires a running container.
+# Start with: research-mentor grobid start
+# Uses ~4-8 GB RAM (CPU-only, no GPU needed).
+
+[grobid]
+# Disabled by default — opt-in when the container is running
+enabled = false
+
+# GROBID REST API endpoint
+url = "http://localhost:8070"
+
+# Container settings (uses container_runtime from [llm.vllm])
+container_image = "lfoppiano/grobid:0.8.1"
+container_name = "research-mentor-grobid"
+
+# ============================================================================
+# Embeddings (semantic memory)
+# ============================================================================
+#
+# Used for cross-session semantic memory (conversation_memories table).
+# The agent remembers past conversations and retrieves relevant context
+# via vector similarity search (sqlite-vec + sentence-transformers).
+#
+# Always runs on CPU to avoid competing with vLLM for GPU VRAM.
+# Runs in a thread pool so it doesn't block the async event loop.
+
+[embeddings]
+# Enable/disable semantic memory (set to false to disable even if installed)
+enabled = true
+
+# HuggingFace model name for sentence-transformers.
+# Available sizes (all Snowflake Arctic Embed v2):
+#   medium: Snowflake/snowflake-arctic-embed-m-v2.0 — 110M params, 768-dim, 8192 tokens
+#   large:  Snowflake/snowflake-arctic-embed-l-v2.0 — 335M params, 1024-dim, 8192 tokens
+# Changing the model requires rebuilding embedding tables (handled automatically).
+model = "Snowflake/snowflake-arctic-embed-m-v2.0"
+
+# Vector dimension (must match the model — 768 for snowflake-arctic-embed-m-v2.0)
+dimension = 768
+
+# Minimum cosine similarity threshold for memory retrieval (0.0–1.0)
+# Higher = stricter matching. 0.65 is a good default for arctic-embed models.
+similarity_threshold = 0.65
+
+# Maximum number of memories to retrieve per query
+max_results = 5
+
+# --- Artifact chunking ---
+# chunk_size: max characters per chunk (~1500 tokens for arctic-embed-m-v2.0's 8192 token context)
+# chunk_overlap: overlapping characters between chunks for context continuity
+artifact_chunk_size = 6000
+artifact_chunk_overlap = 500
+
+# ============================================================================
+# External Services
+# ============================================================================
+
+[services]
+# Your email — sent to academic APIs (PubMed, OpenAlex) for "polite pool" access.
+# Polite pool gives higher rate limits. Not required, but recommended.
+# If empty, searches still work (anonymous pool, lower priority).
+polite_email = ""
+
+[services.brave_search]
+# Brave Search API key file path (plain text, one line).
+# Sign up at https://brave.com/search/api/
+# $5/mo free credits (~1,000 queries). Paid tiers available.
+# Create the file and paste your API key:
+#   echo "BSA..." > ~/.research-mentor/brave_search_api_key
+api_key_file = "~/.research-mentor/brave_search_api_key"
+
+[services.tavily]
+# Tavily Search API key file path (plain text, one line).
+# Sign up at https://tavily.com/ (free: 1,000 credits/mo, no card required).
+# Paid plans available.
+# Create the file and paste your API key:
+#   echo "tvly-..." > ~/.research-mentor/tavily_api_key
+#
+# Configure EITHER Brave or Tavily — if both are set, Brave is used.
+# If neither is configured, web search is disabled. The agent still works.
+api_key_file = "~/.research-mentor/tavily_api_key"
+
+[services.core_api]
+# CORE API key file path (plain text, one line).
+# Sign up at https://core.ac.uk/services/api (free, email registration).
+# Without a key: 100 API credits/day. With a key: 1,000 credits/day.
+# Create the file and paste your API key:
+#   echo "..." > ~/.research-mentor/core_api_key
+#
+# Optional — enrichment works without a key (lower daily quota).
+api_key_file = "~/.research-mentor/core_api_key"
+
+[services.ncbi]
+# NCBI API key file path (plain text, one line).
+# Get one at: https://www.ncbi.nlm.nih.gov/account/settings/
+# Increases PubMed Central rate limit from 3 to 10 req/s.
+# Optional — PMC lookup works without a key (lower rate limit).
+api_key_file = "~/.research-mentor/ncbi_api_key"
+
+# ============================================================================
+# Rate Limits
+# ============================================================================
+#
+# Client-side rate limiting to prevent hitting third-party API limits.
+# Configured conservatively (80% of provider limits) to avoid 429 errors.
+# Format: [max_requests, period_seconds]
+#
+# You should not need to change these unless a provider changes their limits.
+
+[rate_limits]
+# arXiv: No official limit, API unreliable → 0.3 req/sec
+arxiv = [18, 60]
+
+# Semantic Scholar: 1 req/sec (strictest) → 0.67 req/sec
+semantic_scholar = [2, 3]
+
+# PubMed: 3 req/sec without email → 2.5 req/sec conservative
+pubmed = [150, 60]
+# PubMed: 10 req/sec with polite email → 8 req/sec
+pubmed_polite = [480, 60]
+
+# OpenAlex: 10 req/sec without mailto, but less forgiving on bursts → 5 req/sec
+openalex = [300, 60]
+# OpenAlex: 10 req/sec with mailto (polite pool) → 8 req/sec
+openalex_polite = [480, 60]
+
+# Tavily: 1 req/sec conservative (free tier has no published rate limit)
+tavily_per_second = [1, 1]
+
+# Brave Search: 1 req/sec burst protection
+brave_search_per_second = [1, 1]
+
+# Brave Search: monthly quota (free tier with 100-query buffer)
+brave_search_monthly = [1900, 2592000]
+
+# ROR (Research Organization Registry): 10 req/min conservative
+ror_api = [10, 60]
+
+# CORE API (core.ac.uk): 10 req/min unauthenticated conservative
+# With API key: 25 req/min. Uses credits (1 per simple query).
+core_api = [10, 60]
+
+# Unpaywall: 100K req/day allowed, we use 10 req/sec conservative
+unpaywall = [10, 1]
+
+# PubMed Central: 3 req/s without NCBI API key, 10 req/s with key
+pmc = [3, 1]
+
+# Europe PMC: 10 req/s (generous public API)
+europepmc = [10, 1]
+
+# ORCID Public API: 24 req/s allowed, 10 req/s conservative
+orcid = [10, 1]
+
+# ============================================================================
+# Budget (token usage limits)
+# ============================================================================
+#
+# Only enforced for the "api" backend (pay-per-token).
+# Claude CLI (subscription) and vLLM (local) skip budget checks.
+# Set any limit to 0 for unlimited.
+
+[budget]
+enabled = true
+period = "monthly"          # daily, weekly, monthly, total
+global_limit = 0            # 0 = unlimited (total tokens across all providers)
+
+[budget.providers]
+# Per-provider token limits. Key must match [llm.api] provider value.
+# Example: openai = 1000000
+# Default: no per-provider limits
+
+[budget.models]
+# Per-model token limits. Key must match the model name.
+# Example: "gpt-4o" = 500000
+# Default: no per-model limits
+
+# ============================================================================
+# Question Workshop (research question generation)
+# ============================================================================
+
+[question_workshop]
+# Number of candidates generated in parallel, best one is selected.
+# Higher = better quality but more LLM calls. With vLLM batching,
+# wall time is roughly the same regardless of count.
+candidates = 3
+
+# --- Supported fields per workshop ---
+# Default fields each workshop accepts.
+
+[question_workshop.fields]
+natural_science = ["physics", "chemistry", "biology", "earth_science", "astronomy", "materials_science", "environmental_science"]
+social_science = ["psychology", "sociology", "economics", "education", "political_science", "linguistics", "anthropology", "human_geography"]
+# Topics that go beyond typical science and involve social, political, ethical,
+# and other considerations that we can't address with methodology alone
+refused = ["medicine", "clinical_research", "pharmacology", "nutrition_science", "public_health_policy", "veterinary_medicine", "forensic_science", "psychiatry", "clinical_psychology", "epidemiology"]
+# Which field categories each workshop accepts
+phenomenon = ["natural_science"]
+claims = ["natural_science", "social_science"]
+hypothesis = ["social_science"]
+gaps = ["natural_science"]
+questioned = ["natural_science", "social_science"]
+retractions = ["natural_science", "social_science"]
+theory = ["natural_science", "social_science"]
+
+[question_workshop.claims]
+# Maximum papers to fetch from OpenAlex per investigation
+max_papers = 15
+# Temperatures per stage (extraction=precise, framing=creative)
+extraction_temperature = 0.3
+analysis_temperature = 0.2
+gap_temperature = 0.4
+framing_temperature = 0.6
+questions_temperature = 0.5
+
+[question_workshop.hypothesis]
+# Maximum conversation messages retained (older messages pruned)
+max_message_history = 30
+# Maximum papers from OpenAlex stored in state
+max_papers_reviewed = 20
+# Maximum datasets stored in state
+max_datasets_found = 15
+# Maximum confounding variables tracked
+max_confounds = 10
+# Minimum confounds required before transitioning to Stage 4
+min_confounds_for_transition = 3
+# Temperature for conversational (chat) responses
+conversational_temperature = 0.7
+# Temperature for structured extraction calls
+extraction_temperature = 0.0
+
+[question_workshop.questioned]
+# Maximum papers to fetch from Retraction Watch DB per search
+max_papers = 10
+# Maximum curated cases to present to the student
+max_curated = 5
+# Temperatures per stage (extraction=precise, curation=balanced)
+extraction_temperature = 0.3
+curation_temperature = 0.5
+
+[question_workshop.retractions]
+# Maximum conversation messages retained (older messages pruned)
+max_message_history = 30
+# Maximum citing papers to retrieve for impact analysis
+max_citing_papers = 15
+# Temperature for conversational (chat) responses
+conversational_temperature = 0.7
+# Temperature for structured extraction calls
+extraction_temperature = 0.0
+# Pipeline: max papers to fetch in browse mode before LLM selection
+pipeline_max_browse_results = 8
+# Pipeline: max questions to return in final output
+pipeline_max_output_questions = 5
+
+[question_workshop.gaps]
+# Fetch paper introductions from arXiv PDFs for richer mining in Phase 2
+paper_intro_enabled = true
+# Number of top papers (by citation count) to fetch intros for
+paper_intro_max_papers = 2
+# Maximum words to extract from each introduction section
+paper_intro_max_words = 400
+# HTTP timeout for PDF download (seconds)
+paper_intro_download_timeout = 30
+
+[question_workshop.theory]
+# Maximum conversation messages retained (older messages pruned)
+max_message_history = 30
+# Maximum papers from OpenAlex stored in state
+max_papers = 25
+# Maximum observations tracked
+max_observations = 20
+# Maximum candidate explanations tracked
+max_candidate_explanations = 10
+# Temperature for conversational (chat) responses
+conversational_temperature = 0.7
+# Temperature for structured extraction calls
+extraction_temperature = 0.0
+
+# ============================================================================
+# Sharing & Publication
+# ============================================================================
+#
+# The Sharing module helps students communicate their research findings:
+# writing support, venue discovery, review/revision, presentations, open science.
+
+[sharing]
+# Maximum conversation messages retained (older messages pruned)
+max_message_history = 30
+# Maximum venue results returned from search
+max_venue_results = 20
+# Temperature for conversational (chat) responses
+conversational_temperature = 0.7
+# Temperature for structured extraction calls
+extraction_temperature = 0.0
+
+# ============================================================================
+# Collaboration Scout
+# ============================================================================
+#
+# Background collaboration search within the main agent.
+# When info_gathering detects a project gap, it searches for relevant
+# researchers, institutions, and facilities.
+
+[collaboration]
+# Minimum minutes between searches for the same gap type + project
+search_cooldown_minutes = 30
+# Maximum web search queries per collaboration_search invocation
+max_web_queries_per_search = 3
+# Days before stored results are considered stale
+result_expiry_days = 30
+
+# ============================================================================
+# Safety & Privacy
+# ============================================================================
+
+[safety]
+# Fast regex check on outgoing search queries: blocks emails, phone numbers,
+# file paths, credentials, API keys.  No LLM call, no latency cost.
+query_heuristic_review = true
+# LLM-based review of outgoing search queries: catches subtler leaks
+# (e.g. student name + school).  Adds one structured LLM call per search.
+query_llm_review = true
+
+# ============================================================================
+# Evaluation (LLM-as-judge)
+# ============================================================================
+#
+# Controls which model judges evaluation output quality. Should be stronger
+# than the system under test to avoid weak-model-judges-weak-model bias.
+# Runner CLIs can override via --judge-backend / --judge-model / --judge-effort.
+
+[eval.judge]
+backend = "claude-cli"   # "claude-cli", "vllm", or "api"
+model = "sonnet"         # model name (sonnet/opus/haiku for CLI, or vLLM model)
+effort = "high"          # thinking effort: "low", "medium", "high"
+
+[eval.student_simulator]
+# AI student simulator for conversation evals.
+# Auto mode: uses this for normal profiles, SUT backend for adversarial.
+model = "haiku"          # model name (haiku/sonnet for CLI, or vLLM model)

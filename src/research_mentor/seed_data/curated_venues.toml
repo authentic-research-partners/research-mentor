@@ -1,0 +1,672 @@
+# Curated Venue Database — Sharing & Publication Module
+#
+# Venues not discoverable via APIs (student journals, preprint servers,
+# citizen science platforms, science art competitions, etc.).
+# See docs/philosophy/sharing-and-publication.md for rationale.
+#
+# Fields:
+#   name              — Display name
+#   url               — Primary URL
+#   type              — journal | magazine | preprint | presentation | popular_media |
+#                       digital | citizen_science | scicomm_program | science_art
+#   age_range         — [min_age, max_age] inclusive
+#   education_level   — ["middle_school", "high_school", "university", "any"]
+#   fields            — ["natural_science", "social_science"] or ["all"]
+#   review_type       — "faculty" | "graduate_student" | "teen_peer" | "editorial" | "none"
+#   cost              — "free" | "low" | "moderate" (submission + publication combined)
+#   quality_tier      — "selective" | "moderate" | "open"
+#   format            — "paper" | "poster" | "oral" | "video" | "blog" | "visual_art" |
+#                       "photography" | "music" | "data_contribution" | "multiple"
+#   requires_mentor   — true/false
+#   is_isef_affiliated — true/false (ISEF-affiliated venues are always filtered out)
+#   vanity_press_risk — true/false
+#   active            — true/false (soft-delete)
+#   notes             — Free text context for LLM reasoning
+
+# ============================================================================
+# Student Journals — Selective, peer-reviewed
+# ============================================================================
+
+[[venues]]
+name = "Journal of Emerging Investigators (JEI)"
+url = "https://emerginginvestigators.org/"
+type = "journal"
+age_range = [11, 18]
+education_level = ["middle_school", "high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "NSF-funded, grades 6-12, faculty/graduate-student reviewed. Also runs eiRxiv preprint server."
+
+[[venues]]
+name = "The Concord Review"
+url = "https://tcr.org/"
+type = "journal"
+age_range = [14, 18]
+education_level = ["high_school"]
+fields = ["social_science"]
+review_type = "editorial"
+cost = "low"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "History research essays by high school students. Highly selective. Established 1987."
+
+[[venues]]
+name = "Young Scientist Journal"
+url = "https://ysjournal.com/"
+type = "journal"
+age_range = [12, 18]
+education_level = ["middle_school", "high_school"]
+fields = ["natural_science"]
+review_type = "teen_peer"
+cost = "free"
+quality_tier = "moderate"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Student-run, peer-reviewed by teen scientists."
+
+[[venues]]
+name = "Proceedings of the Society of Teen Scientists (SoTS)"
+url = "https://sots.org/"
+type = "journal"
+age_range = [13, 19]
+education_level = ["high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "teen_peer"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "DOIs assigned, CC BY 4.0. Explicitly welcomes failed hypotheses and replications. Prioritizes authentic science over polished results."
+
+[[venues]]
+name = "Columbia Junior Science Research Journal"
+url = "https://columbiajsrj.org/"
+type = "journal"
+age_range = [14, 18]
+education_level = ["high_school"]
+fields = ["natural_science"]
+review_type = "graduate_student"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "University-affiliated (Columbia). Graduate student reviewed."
+
+[[venues]]
+name = "PennScience High School Journal"
+url = "https://pennscience.org/"
+type = "journal"
+age_range = [14, 18]
+education_level = ["high_school"]
+fields = ["natural_science"]
+review_type = "graduate_student"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "University-affiliated (Penn). Graduate student reviewed."
+
+[[venues]]
+name = "Stanford Intersect"
+url = "https://stanfordintersect.org/"
+type = "journal"
+age_range = [14, 18]
+education_level = ["high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "graduate_student"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "University-affiliated (Stanford). Interdisciplinary."
+
+# ============================================================================
+# Undergraduate Journals
+# ============================================================================
+
+[[venues]]
+name = "American Journal of Undergraduate Research (AJUR)"
+url = "https://ajur.uni.edu/"
+type = "journal"
+age_range = [18, 25]
+education_level = ["university"]
+fields = ["natural_science", "social_science"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Genuinely selective, faculty-reviewed, free. One of the top undergraduate journals."
+
+[[venues]]
+name = "Reinvention: An International Journal of Undergraduate Research"
+url = "https://reinventionjournal.org/"
+type = "journal"
+age_range = [18, 25]
+education_level = ["university"]
+fields = ["all"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "International scope, all disciplines. Faculty-reviewed."
+
+[[venues]]
+name = "Fine Focus"
+url = "https://finefocus.org/"
+type = "journal"
+age_range = [18, 25]
+education_level = ["university"]
+fields = ["natural_science"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Microbiology-focused undergraduate journal."
+
+[[venues]]
+name = "IMPULSE: International Journal of Student Research in Neuroscience"
+url = "https://impulse.appstate.edu/"
+type = "journal"
+age_range = [18, 25]
+education_level = ["university"]
+fields = ["natural_science"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Neuroscience-focused undergraduate journal."
+
+[[venues]]
+name = "Columbia Undergraduate Science Journal"
+url = "https://cusj.columbia.edu/"
+type = "journal"
+age_range = [18, 25]
+education_level = ["university"]
+fields = ["natural_science"]
+review_type = "graduate_student"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Columbia-affiliated. Graduate student reviewed."
+
+# ============================================================================
+# Preprint Servers
+# ============================================================================
+
+[[venues]]
+name = "eiRxiv (Emerging Investigators Preprints)"
+url = "https://emerginginvestigators.org/eirxiv"
+type = "preprint"
+age_range = [11, 18]
+education_level = ["middle_school", "high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "open"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Student-focused preprint server by JEI. NSF-funded. Light editorial review. Best first step for students."
+
+[[venues]]
+name = "OSF Preprints"
+url = "https://osf.io/preprints/"
+type = "preprint"
+age_range = [14, 99]
+education_level = ["high_school", "university", "any"]
+fields = ["all"]
+review_type = "none"
+cost = "free"
+quality_tier = "open"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Open to anyone, no institutional affiliation required. All fields. Part of Open Science Framework."
+
+[[venues]]
+name = "arXiv"
+url = "https://arxiv.org/"
+type = "preprint"
+age_range = [16, 99]
+education_level = ["high_school", "university"]
+fields = ["natural_science"]
+review_type = "none"
+cost = "free"
+quality_tier = "open"
+format = "paper"
+requires_mentor = true
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Requires endorsement from existing arXiv author. Students need faculty mentor to submit. Physics, math, CS, biology, quantitative fields."
+
+[[venues]]
+name = "bioRxiv"
+url = "https://www.biorxiv.org/"
+type = "preprint"
+age_range = [16, 99]
+education_level = ["high_school", "university"]
+fields = ["natural_science"]
+review_type = "none"
+cost = "free"
+quality_tier = "open"
+format = "paper"
+requires_mentor = true
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Biology preprints. Students typically need faculty co-author."
+
+# ============================================================================
+# Presentation Venues
+# ============================================================================
+
+[[venues]]
+name = "American Junior Academy of Science (AJAS)"
+url = "https://www.aaas.org/programs/american-junior-academy-science"
+type = "presentation"
+age_range = [14, 18]
+education_level = ["high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "faculty"
+cost = "low"
+quality_tier = "selective"
+format = "oral"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Students present alongside professionals at AAAS annual meeting. Nominated by state academies of science."
+
+[[venues]]
+name = "SoTS Annual Meeting (Science or Else)"
+url = "https://sots.org/"
+type = "presentation"
+age_range = [13, 19]
+education_level = ["high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "teen_peer"
+cost = "free"
+quality_tier = "moderate"
+format = "multiple"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Combines research presentations with creative competitions (music, visual art, writing, comedy). Treats artistic expression as legitimate scientific engagement."
+
+[[venues]]
+name = "Davidson Fellows"
+url = "https://www.davidsongifted.org/gifted-programs/fellows-scholarship/"
+type = "presentation"
+age_range = [14, 18]
+education_level = ["high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Evaluates quality of completed work without constraining how it was conducted. Scholarships."
+
+[[venues]]
+name = "Stockholm Junior Water Prize"
+url = "https://www.siwi.org/prizes/stockholm-junior-water-prize/"
+type = "presentation"
+age_range = [15, 20]
+education_level = ["high_school"]
+fields = ["natural_science"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Water research. Evaluates completed work quality without constraining process."
+
+# ============================================================================
+# Science Art & Visualization
+# ============================================================================
+
+[[venues]]
+name = "Nikon Small World"
+url = "https://www.nikonsmallworld.com/"
+type = "science_art"
+age_range = [11, 99]
+education_level = ["any"]
+fields = ["natural_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "selective"
+format = "photography"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Photomicrography competition. Any age, free entry. Separate categories for different experience levels."
+
+[[venues]]
+name = "Science Without Borders Challenge"
+url = "https://www.livingoceansfoundation.org/education/science-without-borders/"
+type = "science_art"
+age_range = [11, 19]
+education_level = ["middle_school", "high_school"]
+fields = ["natural_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "moderate"
+format = "visual_art"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Visual art with ocean conservation themes. Ages 11-19."
+
+[[venues]]
+name = "FASEB BioArt Awards"
+url = "https://www.faseb.org/bioart"
+type = "science_art"
+age_range = [18, 99]
+education_level = ["university"]
+fields = ["natural_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "selective"
+format = "photography"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Research-derived biological images as art. University and professional."
+
+[[venues]]
+name = "Biodesign Challenge"
+url = "https://www.biodesignchallenge.org/"
+type = "science_art"
+age_range = [14, 25]
+education_level = ["high_school", "university"]
+fields = ["natural_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "selective"
+format = "multiple"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Biotech + art + design. Finalists present at MoMA. High school and college."
+
+[[venues]]
+name = "ZWO Astronomy Photographer of the Year"
+url = "https://www.rmg.co.uk/whats-on/astronomy-photographer-year"
+type = "science_art"
+age_range = [11, 16]
+education_level = ["middle_school", "high_school"]
+fields = ["natural_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "selective"
+format = "photography"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Dedicated Young category (under 16). Free entry."
+
+[[venues]]
+name = "Information is Beautiful Awards"
+url = "https://www.informationisbeautifulawards.com/"
+type = "science_art"
+age_range = [16, 99]
+education_level = ["high_school", "university"]
+fields = ["all"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "selective"
+format = "visual_art"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Data visualization awards. Student category available."
+
+# ============================================================================
+# Science Communication Programs
+# ============================================================================
+
+[[venues]]
+name = "curiousSCIENCEwriters"
+url = "https://curioussciencewriters.org/"
+type = "scicomm_program"
+age_range = [14, 18]
+education_level = ["high_school"]
+fields = ["natural_science", "social_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "moderate"
+format = "blog"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Mentored science writing for general audiences. Great for students interested in science communication."
+
+[[venues]]
+name = "World of Teen Science (SoTS Magazine)"
+url = "https://sots.org/"
+type = "magazine"
+age_range = [13, 19]
+education_level = ["high_school"]
+fields = ["all"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "moderate"
+format = "multiple"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Accepts science writing, science fiction, science art, science music, and game mechanic analysis. Genuinely multidimensional outlet."
+
+[[venues]]
+name = "Breakthrough Junior Challenge"
+url = "https://breakthroughjuniorchallenge.org/"
+type = "scicomm_program"
+age_range = [13, 18]
+education_level = ["high_school"]
+fields = ["natural_science"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "selective"
+format = "video"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Short video explaining a scientific concept. Major prizes. Emphasizes communication skill."
+
+# ============================================================================
+# Citizen Science Platforms
+# ============================================================================
+
+[[venues]]
+name = "iNaturalist"
+url = "https://www.inaturalist.org/"
+type = "citizen_science"
+age_range = [11, 99]
+education_level = ["any"]
+fields = ["natural_science"]
+review_type = "none"
+cost = "free"
+quality_tier = "open"
+format = "data_contribution"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Biodiversity observations. Data feeds into peer-reviewed publications. Co-production of knowledge."
+
+[[venues]]
+name = "Zooniverse"
+url = "https://www.zooniverse.org/"
+type = "citizen_science"
+age_range = [11, 99]
+education_level = ["any"]
+fields = ["natural_science"]
+review_type = "none"
+cost = "free"
+quality_tier = "open"
+format = "data_contribution"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Citizen science research across disciplines. Observations feed into publications."
+
+[[venues]]
+name = "Globe Observer"
+url = "https://observer.globe.gov/"
+type = "citizen_science"
+age_range = [11, 99]
+education_level = ["any"]
+fields = ["natural_science"]
+review_type = "none"
+cost = "free"
+quality_tier = "open"
+format = "data_contribution"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "NASA program. Land cover, clouds, mosquito habitat, trees. Data feeds into NASA research."
+
+[[venues]]
+name = "SciStarter"
+url = "https://scistarter.org/"
+type = "citizen_science"
+age_range = [11, 99]
+education_level = ["any"]
+fields = ["natural_science", "social_science"]
+review_type = "none"
+cost = "free"
+quality_tier = "open"
+format = "data_contribution"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Aggregator for citizen science projects across all fields. Find projects by topic and location."
+
+# ============================================================================
+# Digital Media & Popular Science
+# ============================================================================
+
+[[venues]]
+name = "Citizen Science: Theory and Practice"
+url = "https://theoryandpractice.citizenscienceassociation.org/"
+type = "journal"
+age_range = [18, 99]
+education_level = ["university"]
+fields = ["natural_science", "social_science"]
+review_type = "faculty"
+cost = "free"
+quality_tier = "selective"
+format = "paper"
+requires_mentor = true
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "For students analyzing citizen science data with rigor. Needs faculty co-author."
+
+# ============================================================================
+# Science Gallery & Art-Science Intersection
+# ============================================================================
+
+[[venues]]
+name = "Science Gallery Network"
+url = "https://sciencegallery.org/"
+type = "science_art"
+age_range = [15, 25]
+education_level = ["high_school", "university"]
+fields = ["all"]
+review_type = "editorial"
+cost = "free"
+quality_tier = "selective"
+format = "multiple"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "London, Melbourne, Atlanta venues. Exhibitions and mentorship at art-science intersection. Ages 15-25."
+
+[[venues]]
+name = "Guild of Natural Science Illustrators (GNSI)"
+url = "https://www.gnsi.org/"
+type = "scicomm_program"
+age_range = [16, 99]
+education_level = ["high_school", "university"]
+fields = ["natural_science"]
+review_type = "none"
+cost = "low"
+quality_tier = "moderate"
+format = "visual_art"
+requires_mentor = false
+is_isef_affiliated = false
+vanity_press_risk = false
+active = true
+notes = "Workshops, grants, community for scientific illustration. For students interested in illustration as a discipline."

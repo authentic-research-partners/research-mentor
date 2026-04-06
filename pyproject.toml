@@ -1,11 +1,88 @@
 [build-system]
-requires = ["hatchling"]
+requires = [
+    "hatchling",
+]
 build-backend = "hatchling.build"
 
 [project]
 name = "research-mentor"
-version = "0.0.1"
-authors = [{name = "Sergey Samsonau"}]
+version = "1.0.0"
+description = "AI-powered research mentor for individual students. Local-first, no cloud dependencies. Uses Claude Code CLI or local vLLM for LLM inference and SQLite for storage."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+authors = [
+    { name = "Sergey Samsonau" },
+    { name = "Olga Vine" },
+]
+maintainers = [
+    { name = "Authentic Research Partners LLC", email = "info@arpconnect.com" },
+]
+keywords = [
+    "research",
+    "mentoring",
+    "ai",
+    "education",
+    "citizen-science",
+    "amateur-science",
+    "science-fair",
+    "claude",
+    "vllm",
+    "local-first",
+    "self-hosted",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed",
+]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "click>=8.0.0",
+    "loguru>=0.7.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "httpx>=0.24.0",
+    "langchain-core>=0.3.0",
+    "langgraph>=0.4.0",
+    "langgraph-checkpoint-sqlite>=2.0.0",
+    "openai>=1.0.0",
+    "aiosqlite>=0.20.0",
+    "sqlite-vec>=0.1.6",
+    "sentence-transformers>=2.0.0",
+    "arxiv>=2.1.0",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "pdfplumber>=0.10.0",
+    "defusedxml>=0.7.0",
+    "docling>=2.80.0",
+    "tomli_w>=1.0.0",
+    "tavily-python>=0.7.0",
+    "tenacity>=8.0.0",
+]
+
+[project.license]
+text = "PolyForm Noncommercial 1.0.0"
+
+[project.urls]
+Homepage = "https://arpconnect.com"
+Repository = "https://github.com/authentic-research-partners/research-mentor"
+Issues = "https://github.com/authentic-research-partners/research-mentor/issues"
+
+[project.scripts]
+research-mentor = "research_mentor.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/research_mentor"]
+packages = [
+    "src/research_mentor",
+]
+artifacts = [
+    "src/research_mentor/ui_static/**",
+    "src/research_mentor/config.toml",
+    "src/research_mentor/agents/**",
+]

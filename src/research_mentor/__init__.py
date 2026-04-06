@@ -1,3 +1,3 @@
-"""AI-powered research mentor."""
+"""Personal Research Mentor — AI-powered research mentor for individual students."""
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
