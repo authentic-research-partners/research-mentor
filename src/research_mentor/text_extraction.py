@@ -257,6 +257,33 @@ async def extract_text_or_describe(
     return await extract_text(file_path)
 
 
+def _resolve_vision_backend(config: AppConfig) -> str:
+    """Resolve 'auto' vision backend to a concrete backend.
+
+    auto → follows chat backend: claude-cli→claude-cli, api→api,
+    vllm→local (if model cached) else skip (return empty string).
+    """
+    backend = config.vision.backend
+    if backend != "auto":
+        return backend
+
+    chat = config.backend
+    if chat == "claude-cli":
+        return "claude-cli"
+    if chat == "api":
+        return "api"
+    # vllm — use local vision only if model is already downloaded
+    from research_mentor.vision import is_local_model_cached
+
+    if is_local_model_cached():
+        return "local"
+    logger.info(
+        "Vision backend 'auto' with vLLM chat: local vision model not cached, "
+        "image description disabled. Set vision.backend = 'local' to download it."
+    )
+    return ""
+
+
 async def _describe_image(
     file_path: Path,
     config: AppConfig,
@@ -264,10 +291,21 @@ async def _describe_image(
     research_context: str | None = None,
 ) -> str | None:
     """Describe an image using the configured vision backend."""
-    backend = config.vision.backend
+    backend = _resolve_vision_backend(config)
+
+    if not backend:
+        logger.debug("No vision backend available, skipping image description")
+        return None
 
     if backend == "local":
-        from research_mentor.vision import describe_image
+        from research_mentor.vision import describe_image, is_local_model_cached
+
+        if not is_local_model_cached():
+            logger.warning(
+                "Vision backend is 'local' but model is not downloaded — "
+                "skipping image description. Download it from Settings."
+            )
+            return None
 
         description = describe_image(file_path)
         if not description:
@@ -279,7 +317,7 @@ async def _describe_image(
             file_path, backend, research_context=research_context,
         )
 
-    msg = f"Unknown vision backend: {backend!r}. Must be 'local', 'claude-cli', or 'api'."
+    msg = f"Unknown vision backend: {backend!r}. Must be 'auto', 'local', 'claude-cli', or 'api'."
     raise ValueError(msg)
 
 

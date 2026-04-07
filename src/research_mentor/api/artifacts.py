@@ -195,6 +195,7 @@ async def upload_artifact(
     final: dict[str, Any] = result
 
     # Extract text, chunk, and embed (best-effort — don't fail the upload)
+    warnings: list[str] = []
     try:
         refetched = await _extract_and_embed(
             artifact["id"], str(dest), research_context,
@@ -206,7 +207,18 @@ async def upload_artifact(
             "Text extraction/embedding failed for artifact {}", artifact["id"],
         )
 
-    return ArtifactResponse(**final)
+    # Warn if vision is enabled with local backend but model not downloaded
+    if config.vision.enabled and config.vision.backend == "local":
+        from research_mentor.vision import is_local_model_cached
+
+        if not is_local_model_cached():
+            warnings.append(
+                "Image interpretation is not available — the local vision model "
+                "is not downloaded. Go to Settings → Vision to download it, "
+                "or switch to a different backend."
+            )
+
+    return ArtifactResponse(**final, warnings=warnings)
 
 
 @router.get("", response_model=PaginatedArtifacts)

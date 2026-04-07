@@ -64,6 +64,8 @@ uv tool install research-mentor --python 3.13
 research-mentor         # start the server (creates database automatically on first run)
 ```
 
+On first launch, an embedding model (~1.2 GB) is downloaded automatically to `~/.cache/huggingface/`. This is a one-time download used for semantic search across your conversations and research.
+
 Then open http://localhost:8080 in your browser.
 
 Run `research-mentor doctor` at any time to check that everything is working.
@@ -167,8 +169,17 @@ You can switch backends in the UI sidebar at any time — no restart needed. Bot
 ## System Requirements
 
 - **Python:** 3.13 (installed automatically by uv — no manual install needed)
-- **Disk space:** ~2GB (for dependencies and embedding model)
-- **RAM:** 2GB minimum
+- **Disk space:** ~2 GB (for dependencies and embedding model)
+- **RAM:** 2 GB minimum
+
+### For local vision (optional)
+
+Local vision lets the mentor interpret uploaded images, charts, and figures entirely on your machine — nothing is sent to the internet. It runs on CPU (no GPU needed) but requires more RAM and disk space.
+
+- **Disk space:** ~4 GB additional (vision model weights)
+- **RAM:** ~10 GB total during image processing (model is unloaded when idle)
+- **Speed:** ~15–90 seconds per image on CPU (runs in the background — does not block the conversation)
+- **Alternative:** If you use the Claude CLI backend, vision uses Claude instead (faster, no extra download needed)
 
 ### For local vLLM (optional)
 
@@ -188,6 +199,14 @@ The mentor works without web search, but can give richer answers with it enabled
    ```bash
    echo "BSA..." > ~/.research-mentor/brave_search_api_key
    ```
+
+---
+
+## Updating
+
+```
+uv tool upgrade research-mentor
+```
 
 ---
 

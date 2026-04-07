@@ -24,6 +24,90 @@ _model: Qwen3VLForConditionalGeneration | None = None
 _processor: AutoProcessor | None = None
 
 
+def _model_cache_dir() -> Path | None:
+    """Return the HuggingFace cache directory for the vision model, or None."""
+    try:
+        from huggingface_hub import scan_cache_dir
+
+        from research_mentor.config import load_config
+
+        model_name = load_config().vision.model
+        cache_info = scan_cache_dir()
+        for repo in cache_info.repos:
+            if repo.repo_id == model_name:
+                return Path(repo.repo_path)
+    except Exception:
+        pass
+    return None
+
+
+_DOWNLOAD_COMPLETE_TAG = ".research_mentor_download_complete"
+
+
+def is_local_model_cached() -> bool:
+    """Check if the local vision model was fully downloaded.
+
+    Uses a tag file written after successful model load — partial/interrupted
+    downloads won't have the tag.
+    """
+    cache_dir = _model_cache_dir()
+    if cache_dir is None:
+        return False
+    return (cache_dir / _DOWNLOAD_COMPLETE_TAG).exists()
+
+
+def _mark_download_complete() -> None:
+    """Write the tag file after successful model load."""
+    cache_dir = _model_cache_dir()
+    if cache_dir:
+        (cache_dir / _DOWNLOAD_COMPLETE_TAG).touch()
+
+
+def local_model_cache_path() -> str:
+    """Return the path where the model is (or would be) stored."""
+    cache_dir = _model_cache_dir()
+    if cache_dir:
+        return str(cache_dir)
+    # Not downloaded yet — return where it would go
+    try:
+        from huggingface_hub.constants import HF_HUB_CACHE
+
+        from research_mentor.config import load_config
+
+        model_name = load_config().vision.model
+        # HF stores as models--org--name
+        folder = "models--" + model_name.replace("/", "--")
+        return str(Path(HF_HUB_CACHE) / folder)
+    except Exception:
+        return "~/.cache/huggingface/hub"
+
+
+def local_model_cache_size_bytes() -> int:
+    """Return disk usage of the cached model in bytes, or 0 if not cached."""
+    cache_dir = _model_cache_dir()
+    if not cache_dir:
+        return 0
+    try:
+        return sum(f.stat().st_size for f in cache_dir.rglob("*") if f.is_file())
+    except Exception:
+        return 0
+
+
+def remove_local_model_cache() -> bool:
+    """Remove the cached local vision model. Returns True if removed."""
+    global _model, _processor
+    cache_dir = _model_cache_dir()
+    if not cache_dir:
+        return False
+    import shutil
+
+    shutil.rmtree(cache_dir, ignore_errors=True)
+    _model = None
+    _processor = None
+    logger.info("Removed cached vision model: {}", cache_dir)
+    return True
+
+
 def _get_model() -> tuple[Qwen3VLForConditionalGeneration, Any]:
     """Get or create the singleton vision model and processor.
 
@@ -49,6 +133,7 @@ def _get_model() -> tuple[Qwen3VLForConditionalGeneration, Any]:
         device_map="cpu",
         torch_dtype=torch.float32,
     )
+    _mark_download_complete()
     logger.info("Vision model loaded: {}", model_name)
     return _model, _processor
 
@@ -93,10 +178,14 @@ def describe_image(file_path: str | Path) -> str | None:
         },
     ]
 
+    from PIL import Image
+
+    image = Image.open(path).convert("RGB")
+
     text_input = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = processor(
         text=[text_input],
-        images=[path],
+        images=[image],
         padding=True,
         return_tensors="pt",
     )

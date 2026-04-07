@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.2 (2026-04-06)
+
+- Embedding model downloads in the background — server starts immediately
+- Vision off by default; enable in Settings with backend choice (auto/Claude CLI/local/API)
+- Local vision model (~4 GB, ~10 GB RAM) managed from Settings: download, remove, size and path info
+- Fix local vision model crash (processor expected PIL Image, not file path)
+- Fix version display
+
 ## v1.0.1 (2026-04-06)
 
 - Fix assessment score display to use 0-100 scale matching backend

@@ -232,6 +232,7 @@ class ArtifactResponse(BaseModel):
     llm_summary: str | None = None
     llm_summary_generated_at: str | None = None
     metadata: dict[str, object] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
     created_at: str
     updated_at: str
 

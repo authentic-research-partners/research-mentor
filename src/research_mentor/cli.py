@@ -112,9 +112,10 @@ def serve(
 
     api_url = f"http://{serve_host}:{serve_port}"
 
-    _print_startup_banner(api_url=api_url)
-
     from research_mentor.server import app
+
+    # Banner prints after lifespan startup completes (model download, DB init, etc.)
+    app.state.startup_banner_url = api_url
 
     uvicorn.run(app, host=serve_host, port=serve_port, log_level="warning")
 

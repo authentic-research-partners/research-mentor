@@ -194,14 +194,15 @@ max_upload_bytes = 52428800
 # Always runs on CPU to avoid competing with vLLM for GPU VRAM.
 
 [vision]
-# Enable/disable vision for artifact interpretation
-enabled = true
+# Enable/disable vision for artifact interpretation (off by default — enable in Settings)
+enabled = false
 
-# Backend: "local", "claude-cli", or "api"
-#   local     — text extraction (pdfplumber/python-docx/csv) + Qwen3-VL-2B on CPU (~15-30s, free/offline)
+# Backend: "auto", "local", "claude-cli", or "api"
+#   auto      — follows the chat backend (recommended)
+#   local     — Qwen3-VL-2B on CPU (~15-30s, free/offline, downloads ~4GB model on first use)
 #   claude-cli — Claude Code CLI reads the file directly (excellent quality, uses subscription)
 #   api       — OpenAI-compatible vision API (bring your own key, independent of chat LLM)
-backend = "local"
+backend = "auto"
 
 # --- Local backend (text extraction + Qwen3-VL-2B on CPU) ---
 # HuggingFace model name (downloaded on first use, ~4GB)

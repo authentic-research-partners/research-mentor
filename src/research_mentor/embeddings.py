@@ -27,6 +27,50 @@ from sqlite_vec import serialize_float32
 if TYPE_CHECKING:
     from sentence_transformers import SentenceTransformer
 
+
+def _load_sentence_transformer(model_name: str) -> SentenceTransformer:
+    """Load a SentenceTransformer model with all HuggingFace noise suppressed."""
+    import logging
+    import os
+    import warnings
+
+    from sentence_transformers import SentenceTransformer
+
+    # Suppress HF warnings, progress bars, and "malicious code" messages
+    _hf_env = {
+        "HF_HUB_DISABLE_SYMLINKS_WARNING": "1",
+        "HF_HUB_DISABLE_PROGRESS_BARS": "1",
+        "TRANSFORMERS_NO_ADVISORY_WARNINGS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+    }
+    _old_env = {k: os.environ.get(k) for k in _hf_env}
+    os.environ.update(_hf_env)
+
+    # Also suppress transformers logger (catches "malicious code" warnings)
+    tf_logger = logging.getLogger("transformers")
+    old_level = tf_logger.level
+    tf_logger.setLevel(logging.ERROR)
+
+    try:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            model = SentenceTransformer(
+                model_name,
+                device="cpu",
+                trust_remote_code=True,
+                config_kwargs={"use_memory_efficient_attention": False},
+            )
+    finally:
+        tf_logger.setLevel(old_level)
+        for k, v in _old_env.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+    return model
+
+
 # Lazy singleton — loaded on first use
 _model: SentenceTransformer | None = None
 _model_name: str | None = None
@@ -41,34 +85,42 @@ def _get_model() -> SentenceTransformer:
     if _model is not None:
         return _model
 
-    from sentence_transformers import SentenceTransformer
-
     from research_mentor.config import load_config
 
     config = load_config()
     _model_name = config.embeddings.model
 
     # Check if the model is already cached locally
+    needs_download = False
     try:
         from huggingface_hub import try_to_load_from_cache
 
         cached = try_to_load_from_cache(_model_name, "config.json")
         if not isinstance(cached, str):
-            logger.info(
-                "Downloading embedding model '{}' from HuggingFace (~400 MB, one-time only)…",
-                _model_name,
-            )
+            needs_download = True
         else:
             logger.info("Loading embedding model: {} (device=cpu)", _model_name)
     except Exception:
         logger.info("Loading embedding model: {} (device=cpu)", _model_name)
 
-    _model = SentenceTransformer(
-        _model_name,
-        device="cpu",
-        trust_remote_code=True,
-        config_kwargs={"use_memory_efficient_attention": False},
-    )
+    if needs_download:
+        import click
+
+        click.echo()
+        click.echo("  Downloading embedding model (~1.2 GB, one-time only)…")
+        click.echo("  Stored in: ~/.cache/huggingface/")
+        click.echo("  Please wait — this may take a few minutes.")
+        click.echo()
+
+    _model = _load_sentence_transformer(_model_name)
+
+    if needs_download:
+        import click
+
+        click.echo("  Embedding model ready!")
+        click.echo()
+        click.echo()
+
     logger.info(
         "Embedding model loaded: {} (dim={})",
         _model_name,

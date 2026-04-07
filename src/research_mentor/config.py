@@ -329,8 +329,9 @@ class LoggingConfig(BaseModel):
 class VisionConfig(BaseModel):
     """Configuration for vision / artifact interpretation.
 
-    Three backends:
-    - ``local``: text extraction + Qwen3-VL-2B on CPU (free/offline, ~15-30s per image)
+    Four backends:
+    - ``auto``: follows the chat backend (recommended)
+    - ``local``: Qwen3-VL-2B on CPU (free/offline, ~15-30s per image, downloads ~4GB model)
     - ``claude-cli``: Claude Code CLI reads files directly (excellent quality)
     - ``api``: OpenAI-compatible vision API (bring your own key)
     """

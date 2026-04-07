@@ -179,8 +179,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # (handles manual config.toml edits or env var overrides)
     await _check_embedding_dimension()
 
+    # Pre-load embedding model in background — don't block server startup.
+    # If download is needed, user sees progress in console while server is already usable.
+    # If a request needs embeddings before this finishes, _get_model() blocks that request only.
+    from research_mentor.embeddings import _get_model
+    asyncio.get_event_loop().run_in_executor(None, _get_model)
+
     # Auto-enable GROBID if it's responding but not yet enabled
     await _auto_enable_grobid()
+
+    # Print startup banner AFTER DB + config init (model may still be downloading)
+    banner_url = getattr(app.state, "startup_banner_url", None)
+    if banner_url:
+        from research_mentor.cli import _print_startup_banner
+        _print_startup_banner(api_url=banner_url)
 
     yield
 
@@ -1238,6 +1250,10 @@ class VisionConfigResponse(BaseModel):
     enabled: bool
     backend: str
     local_model: str
+    local_model_cached: bool
+    local_model_path: str
+    local_model_size_mb: int
+    local_model_download_size_mb: int  # approximate download size
     api_provider: str
     api_base_url: str
     api_model: str
@@ -1256,8 +1272,8 @@ class VisionConfigUpdate(BaseModel):
     @field_validator("backend")
     @classmethod
     def validate_backend(cls, v: str | None) -> str | None:
-        if v is not None and v not in ("local", "claude-cli", "api"):
-            msg = f"Invalid vision backend: '{v}'. Must be 'local', 'claude-cli', or 'api'."
+        if v is not None and v not in ("auto", "local", "claude-cli", "api"):
+            msg = f"Invalid vision backend: '{v}'. Must be 'auto', 'local', 'claude-cli', or 'api'."
             raise ValueError(msg)
         return v
 
@@ -1287,17 +1303,27 @@ def _write_vision_api_key(key: str) -> None:
         key_path.unlink()
 
 
-@app.get("/api/config/vision", response_model=VisionConfigResponse)
-async def get_vision_config() -> VisionConfigResponse:
-    """Get vision / artifact interpretation configuration."""
+def _build_vision_response() -> VisionConfigResponse:
+    """Build VisionConfigResponse from current config + model state."""
     from research_mentor.config import load_config as _lc
+    from research_mentor.vision import (
+        is_local_model_cached,
+        local_model_cache_path,
+        local_model_cache_size_bytes,
+    )
 
     cfg = _lc()
     api_key = _read_vision_api_key()
+    size_bytes = local_model_cache_size_bytes()
+
     return VisionConfigResponse(
         enabled=cfg.vision.enabled,
         backend=cfg.vision.backend,
         local_model=cfg.vision.model,
+        local_model_cached=is_local_model_cached(),
+        local_model_path=local_model_cache_path(),
+        local_model_size_mb=size_bytes // (1024 * 1024) if size_bytes else 0,
+        local_model_download_size_mb=4000,  # ~4GB approximate
         api_provider=cfg.vision.api_provider,
         api_base_url=cfg.vision.api_base_url,
         api_model=cfg.vision.api_model,
@@ -1306,10 +1332,15 @@ async def get_vision_config() -> VisionConfigResponse:
     )
 
 
+@app.get("/api/config/vision", response_model=VisionConfigResponse)
+async def get_vision_config() -> VisionConfigResponse:
+    """Get vision / artifact interpretation configuration."""
+    return _build_vision_response()
+
+
 @app.put("/api/config/vision", response_model=VisionConfigResponse)
 async def set_vision_config(request: VisionConfigUpdate) -> VisionConfigResponse:
     """Update vision / artifact interpretation configuration."""
-    from research_mentor.config import load_config as _lc
     from research_mentor.config import update_user_config
 
     updates: dict[str, Any] = {}
@@ -1333,18 +1364,69 @@ async def set_vision_config(request: VisionConfigUpdate) -> VisionConfigResponse
         action = "updated" if request.api_key else "cleared"
         logger.info("Vision API key {}", action)
 
-    cfg = _lc()
-    api_key = _read_vision_api_key()
-    return VisionConfigResponse(
-        enabled=cfg.vision.enabled,
-        backend=cfg.vision.backend,
-        local_model=cfg.vision.model,
-        api_provider=cfg.vision.api_provider,
-        api_base_url=cfg.vision.api_base_url,
-        api_model=cfg.vision.api_model,
-        api_key_configured=bool(api_key),
-        api_key_preview=_mask_api_key(api_key),
+    return _build_vision_response()
+
+
+# -- Vision local model download / remove --
+
+
+_vision_download_in_progress = False
+
+
+@app.post("/api/config/vision/local-model/download", response_model=VisionConfigResponse)
+async def download_vision_local_model() -> VisionConfigResponse:
+    """Download the local vision model in the background."""
+    global _vision_download_in_progress
+
+    from research_mentor.vision import is_local_model_cached
+
+    if is_local_model_cached():
+        return _build_vision_response()
+
+    if _vision_download_in_progress:
+        return _build_vision_response()
+
+    _vision_download_in_progress = True
+
+    async def _download() -> None:
+        global _vision_download_in_progress
+        try:
+            from research_mentor.vision import _get_model
+            await asyncio.to_thread(_get_model)
+            logger.info("Vision local model download complete")
+        except Exception:
+            logger.exception("Vision local model download failed")
+        finally:
+            _vision_download_in_progress = False
+
+    asyncio.create_task(_download())
+    return _build_vision_response()
+
+
+@app.delete("/api/config/vision/local-model", response_model=VisionConfigResponse)
+async def remove_vision_local_model() -> VisionConfigResponse:
+    """Remove the cached local vision model from disk."""
+    from research_mentor.vision import remove_local_model_cache
+
+    await asyncio.to_thread(remove_local_model_cache)
+    return _build_vision_response()
+
+
+@app.get("/api/config/vision/local-model/status")
+async def vision_local_model_status() -> dict[str, Any]:
+    """Check local model download status (for polling during download)."""
+    from research_mentor.vision import (
+        is_local_model_cached,
+        local_model_cache_path,
+        local_model_cache_size_bytes,
     )
+
+    return {
+        "cached": is_local_model_cached(),
+        "downloading": _vision_download_in_progress,
+        "path": local_model_cache_path(),
+        "size_mb": local_model_cache_size_bytes() // (1024 * 1024),
+    }
 
 
 # --- GROBID config ---
