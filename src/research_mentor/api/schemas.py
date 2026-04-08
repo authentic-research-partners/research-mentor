@@ -2,9 +2,22 @@
 
 from __future__ import annotations
 
+import enum
 import math
 
 from pydantic import BaseModel, Field
+
+
+class ArtifactType(enum.StrEnum):
+    """Artifact types — drives processing path and vision prompts."""
+
+    paper = "paper"
+    document = "document"
+    data = "data"
+    photograph = "photograph"
+    scientific_image = "scientific_image"
+    chart = "chart"
+    handwriting = "handwriting"
 
 # ---------------------------------------------------------------------------
 # Pagination
@@ -199,7 +212,7 @@ class MemorySearchResponse(MemoryResponse):
 
 
 class ArtifactCreate(BaseModel):
-    artifact_type: str
+    artifact_type: ArtifactType
     file_name: str
     file_path: str
     mime_type: str
@@ -229,6 +242,7 @@ class ArtifactResponse(BaseModel):
     file_size_bytes: int
     description: str | None = None
     extracted_text: str | None = None
+    analysis: str | None = None
     llm_summary: str | None = None
     llm_summary_generated_at: str | None = None
     metadata: dict[str, object] = Field(default_factory=dict)

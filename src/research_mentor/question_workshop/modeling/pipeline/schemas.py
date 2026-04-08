@@ -45,6 +45,11 @@ APPROACH_GROUPS: dict[str, dict[str, str | list[str]]] = {
 MODELING_APPROACHES: dict[str, dict[str, str]] = {
     "numerical_simulation": {
         "label": "Numerical Simulation",
+        "summary": (
+            "Simulate how systems change over time using math equations "
+            "solved by a computer — population growth, weather, chemical "
+            "reactions, and more."
+        ),
         "description": (
             "Solve differential equations (ODEs/PDEs) computationally. "
             "Covers a vast range: population dynamics, chemical kinetics, "
@@ -73,6 +78,10 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "agent_based": {
         "label": "Agent-Based Modeling",
+        "summary": (
+            "Give individual actors simple rules and watch complex "
+            "behavior emerge — like birds flocking or diseases spreading."
+        ),
         "description": (
             "Individual agents follow simple rules; complex behavior "
             "emerges from interactions. Segregation, flocking, traffic, "
@@ -86,6 +95,10 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "monte_carlo": {
         "label": "Monte Carlo / Stochastic Simulation",
+        "summary": (
+            "Run thousands of random scenarios to estimate how likely "
+            "different outcomes are — from flood risk to genetic drift."
+        ),
         "description": (
             "Run thousands of random scenarios to estimate probabilities "
             "and distributions. Risk analysis, genetic drift, flood "
@@ -99,6 +112,11 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "molecular_dynamics": {
         "label": "Molecular Dynamics",
+        "summary": (
+            "Simulate how atoms and molecules move and interact — "
+            "predict how proteins fold, how materials behave, or how "
+            "drugs bind to their targets."
+        ),
         "description": (
             "Simulate atomic and molecular interactions using force fields "
             "(e.g., AMBER, CHARMM, OPLS). Atoms move according to Newton's "
@@ -124,6 +142,11 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "dft": {
         "label": "Density Functional Theory (DFT)",
+        "summary": (
+            "Calculate the electronic structure of materials and molecules "
+            "from quantum mechanics — predict properties of new materials, "
+            "catalysts, or drugs before making them in a lab."
+        ),
         "description": (
             "Quantum mechanical electronic structure calculations using "
             "approximate functionals (PBE, B3LYP, HSE06). Two major "
@@ -156,6 +179,10 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "cfd": {
         "label": "Computational Fluid Dynamics (CFD)",
+        "summary": (
+            "Simulate how fluids (air, water, blood) flow through and "
+            "around things — from airplane wings to blood vessels."
+        ),
         "description": (
             "Simulate fluid flow by solving Navier-Stokes equations. "
             "Aerodynamics, blood flow, ocean currents, combustion."
@@ -168,6 +195,10 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "fea": {
         "label": "Finite Element Analysis (FEA)",
+        "summary": (
+            "Test how structures handle stress, heat, or vibration "
+            "in a computer — before building them in real life."
+        ),
         "description": (
             "Structural, thermal, and electromagnetic analysis by "
             "dividing systems into discrete elements."
@@ -180,19 +211,30 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "ml_based": {
         "label": "AI/ML-Based Modeling",
+        "summary": (
+            "Use AI and machine learning to model systems that are "
+            "too complex for traditional equations — let the data "
+            "reveal the patterns."
+        ),
         "description": (
             "Data-driven models including physics-informed neural "
             "networks (PINNs), surrogate models, symbolic regression. "
             "Prediction without full mechanistic understanding."
         ),
         "examples": (
-            "Recovering governing equations from data, turbulence "
-            "surrogate models, protein structure prediction"
+            "Predicting protein structures from sequences, discovering "
+            "hidden equations governing a physical system, forecasting "
+            "turbulence from sensor data"
         ),
         "tools": "PyTorch, TensorFlow, JAX, scikit-learn, PySR",
     },
     "system_dynamics": {
         "label": "System Dynamics",
+        "summary": (
+            "Model systems with feedback loops — how populations grow, "
+            "resources get depleted, or economies cycle between boom "
+            "and bust."
+        ),
         "description": (
             "Stock-and-flow models with feedback loops. Population "
             "dynamics, economic cycles, resource depletion, "
@@ -206,6 +248,11 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "network": {
         "label": "Network / Graph-Based Models",
+        "summary": (
+            "Model systems where connections matter — how diseases "
+            "spread through social networks, how food webs collapse, "
+            "or how information goes viral."
+        ),
         "description": (
             "Model systems where structure matters: social networks, "
             "epidemics on networks, food webs, transportation."
@@ -218,6 +265,10 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "cellular_automata": {
         "label": "Cellular Automata",
+        "summary": (
+            "Simple rules on a grid that produce surprisingly complex "
+            "patterns — like how forest fires spread or cities grow."
+        ),
         "description": (
             "Grid-based rule systems where local rules produce global "
             "patterns. Forest fires, crystal growth, urban expansion."
@@ -230,6 +281,11 @@ MODELING_APPROACHES: dict[str, dict[str, str]] = {
     },
     "discrete_event": {
         "label": "Discrete Event Simulation",
+        "summary": (
+            "Model systems where things happen one at a time — "
+            "patients arriving at a hospital, packages moving through "
+            "a warehouse, cars at an intersection."
+        ),
         "description": (
             "Model systems as sequences of events. Queuing theory, "
             "manufacturing, hospital workflows, logistics."

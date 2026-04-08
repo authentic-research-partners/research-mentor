@@ -210,6 +210,14 @@ model = "Qwen/Qwen3-VL-2B-Instruct"
 # Maximum tokens to generate for image description
 max_new_tokens = 512
 
+# Maximum number of images to extract and describe per PDF artifact.
+# Prevents overwhelming the vision backend on image-heavy papers.
+max_images_per_artifact = 20
+
+# Maximum image dimension (longest edge, pixels) before sending to any vision backend.
+# Images are resized preserving aspect ratio. Bounds VRAM for local models, token cost for API.
+max_image_dimension = 1536
+
 # --- API backend (OpenAI-compatible vision API, independent credentials) ---
 api_provider = ""                                    # display name (e.g. "openai", "google")
 api_base_url = ""                                    # OpenAI-compatible endpoint
@@ -272,9 +280,9 @@ max_results = 5
 
 # --- Artifact chunking ---
 # chunk_size: max characters per chunk (~1500 tokens for arctic-embed-m-v2.0's 8192 token context)
-# chunk_overlap: overlapping characters between chunks for context continuity
+# chunk_overlap: overlapping characters between chunks (50% of chunk_size for full coverage)
 artifact_chunk_size = 6000
-artifact_chunk_overlap = 500
+artifact_chunk_overlap = 3000
 
 # ============================================================================
 # External Services

@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.0.3 (2026-04-08)
+
+### Artifacts
+- Typed uploads (7 types) with required description, per-type format validation and vision prompts
+- Replace Docling with pdfplumber/python-docx/pypdfium2 — lighter dependencies
+- Section-aware chunking for GROBID PDFs, 50% overlap, image resize + cap
+- Inline description editing, type config from API
+- Pandas data analysis for CSV/TSV uploads (describe, correlations, value counts)
+- Statistical analysis: LLM-selected scipy/statsmodels tests (11 types), profile-aware tier selection, retry with error feedback
+- Pedagogical artifact display: data summaries visible, test results and interpretive AI descriptions reserved for mentor conversation
+- Separate storage: extracted_text for raw content, analysis for AI/computed interpretation
+
+### Other
+- Rewrite workshop descriptions for clarity
+- Improve artifact upload form and startup banner
+- Prompt injection protection for uploaded documents and user inputs
+
 ## v1.0.2 (2026-04-06)
 
 - Embedding model downloads in the background — server starts immediately

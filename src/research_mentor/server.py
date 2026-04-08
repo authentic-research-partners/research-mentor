@@ -23,6 +23,7 @@ from starlette.responses import Response as StarletteResponse
 
 from research_mentor import __version__
 from research_mentor.api.artifacts import router as artifacts_router
+from research_mentor.api.artifacts import types_router as artifact_types_router
 from research_mentor.api.assessments import router as assessments_router
 from research_mentor.api.data_management import router as data_management_router
 from research_mentor.api.memories import (
@@ -250,6 +251,7 @@ app.include_router(sessions_router)
 app.include_router(memories_project_router)
 app.include_router(memory_router)
 app.include_router(artifacts_router)
+app.include_router(artifact_types_router)
 app.include_router(assessments_router)
 app.include_router(student_profile_router)
 app.include_router(student_assessments_router)

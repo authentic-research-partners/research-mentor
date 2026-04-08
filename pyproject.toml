@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "research-mentor"
-version = "1.0.2"
+version = "1.0.3"
 description = "AI-powered research mentor that guides you through your research journey."
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
@@ -61,10 +61,13 @@ dependencies = [
     "pyyaml>=6.0",
     "pdfplumber>=0.10.0",
     "defusedxml>=0.7.0",
-    "docling>=2.80.0",
+    "python-docx>=1.0.0",
+    "pandas>=2.0.0",
     "tomli_w>=1.0.0",
     "tavily-python>=0.7.0",
     "tenacity>=8.0.0",
+    "tabulate>=0.9.0",
+    "statsmodels>=0.14.0",
 ]
 
 [project.license]

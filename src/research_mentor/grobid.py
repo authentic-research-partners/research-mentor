@@ -2,7 +2,7 @@
 
 Communicates with a running GROBID service via its REST API to extract
 structured content from academic PDFs. Returns markdown with proper heading
-hierarchy, which is superior to Docling's flat extraction for papers.
+hierarchy, which is superior to pdfplumber's flat extraction for papers.
 
 Health checks are cached to avoid probing on every PDF extraction.
 """

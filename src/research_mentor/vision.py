@@ -138,11 +138,17 @@ def _get_model() -> tuple[Qwen3VLForConditionalGeneration, Any]:
     return _model, _processor
 
 
-def describe_image(file_path: str | Path) -> str | None:
+def describe_image(
+    file_path: str | Path,
+    *,
+    prompt: str | None = None,
+) -> str | None:
     """Generate a text description of an image.
 
     Args:
         file_path: Path to the image file.
+        prompt: Pre-built vision prompt (from build_vision_prompt). Falls back
+            to a generic prompt if not provided.
 
     Returns:
         Text description of the image, or None if the file doesn't exist
@@ -159,21 +165,20 @@ def describe_image(file_path: str | Path) -> str | None:
 
     model, processor = _get_model()
 
+    vision_text = prompt or (
+        "Examine this image carefully. "
+        "First, transcribe any text you can read "
+        "(printed, typed, or handwritten). "
+        "Then describe any diagrams, charts, graphs, tables, "
+        "or visual elements present in the image."
+    )
+
     messages = [
         {
             "role": "user",
             "content": [
                 {"type": "image", "image": str(path)},
-                {
-                    "type": "text",
-                    "text": (
-                        "Examine this image carefully. "
-                        "First, transcribe any text you can read "
-                        "(printed, typed, or handwritten). "
-                        "Then describe any diagrams, charts, graphs, tables, "
-                        "or visual elements present in the image."
-                    ),
-                },
+                {"type": "text", "text": vision_text},
             ],
         },
     ]
@@ -194,7 +199,9 @@ def describe_image(file_path: str | Path) -> str | None:
     import torch
 
     with torch.no_grad():
-        output_ids = model.generate(**inputs, max_new_tokens=config.vision.max_new_tokens)
+        output_ids = model.generate(  # type: ignore[misc]  # Qwen3VL vs base class signature
+            **inputs, max_new_tokens=config.vision.max_new_tokens,
+        )
 
     # Decode only the generated tokens (skip the input)
     generated_ids = output_ids[0][inputs["input_ids"].shape[1] :]

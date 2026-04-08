@@ -436,9 +436,11 @@ async def generate_problem(
         base_prompt = PROBLEM_GENERATION_PROMPT
         problem_type_label = "experimental (lab-based)"
 
-    # Build context from exploration
+    # Build context from exploration (wrap in delimiters — content originates
+    # from user suggestions and prior LLM output, both untrusted for prompt injection)
     domains = ", ".join(exploration_data.get("domains", []))
-    phenomena = "\n".join(f"- {p}" for p in exploration_data.get("phenomena", []))
+    phenomena_raw = "\n".join(f"- {p}" for p in exploration_data.get("phenomena", []))
+    phenomena = f"<user_content>\n{phenomena_raw}\n</user_content>" if phenomena_raw else ""
     materials = ", ".join(exploration_data.get("materials", []))
     surprise_factor = exploration_data.get("surprise_factor", "")
 

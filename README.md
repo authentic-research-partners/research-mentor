@@ -30,6 +30,9 @@ Free for individual use. Not designed for commercial use. If you want a similar 
 - **Assessment tracking** — project-level and student-level progress evaluation
 - **Multiple teaching personas** — different mentoring styles
 - **Content safety filtering** — input and output safety review
+- **Artifact processing** — upload papers, documents, data files, photographs, scientific images, charts, and handwritten notes
+- **Data analysis** — automatic statistical analysis of uploaded data, adapted to student level, with pedagogical display of results
+- **Vision** — optional image understanding for describing photographs, scientific images, charts, and handwriting
 
 ### Infrastructure and Interface
 - **Three LLM backends** — Claude Code CLI, local vLLM, remote API
@@ -58,7 +61,7 @@ Free for individual use. Not designed for commercial use. If you want a similar 
 1. `curl -LsSf https://astral.sh/uv/install.sh | sh`
 2. `uv tool install research-mentor --python 3.13`
 
-See [INSTALLATION.md](INSTALLATION.md) for detailed step-by-step instructions, including [uninstall](INSTALLATION.md#uninstalling).
+See [INSTALLATION.md](https://github.com/authentic-research-partners/research-mentor/blob/main/INSTALLATION.md) for detailed step-by-step instructions, including [uninstall](https://github.com/authentic-research-partners/research-mentor/blob/main/INSTALLATION.md#uninstalling).
 
 ## Quick Start
 
@@ -73,7 +76,7 @@ research-mentor vllm-container start   # start vLLM in a Podman container
 research-mentor serve --backend vllm   # start the app server
 ```
 
-vLLM runs in a container (Podman or Docker) — it is **not** a Python dependency of this package. The container handles all vLLM + CUDA dependencies. See [docs/usage.md](docs/usage.md) for details.
+vLLM runs in a container (Podman or Docker) — it is **not** a Python dependency of this package. The container handles all vLLM + CUDA dependencies. See [docs/usage.md](https://github.com/authentic-research-partners/research-mentor/blob/main/docs/usage.md) for details.
 
 ## API
 
@@ -110,7 +113,7 @@ active_model = "gemma3-12b-fp8"
 
 All options can also be set via CLI flags (`research-mentor vllm-server --help`) or environment variables (`RESEARCH_MENTOR_BACKEND=vllm`).
 
-See [docs/configuration.md](docs/configuration.md) for the full configuration reference.
+See [docs/configuration.md](https://github.com/authentic-research-partners/research-mentor/blob/main/docs/configuration.md) for the full configuration reference.
 
 ## Security & Privacy
 
@@ -164,6 +167,7 @@ Both layers are on by default. If a query is blocked, the search is skipped and 
 - **File upload security** — filename sanitization, file type whitelist, size limits
 - **XML parsing** — uses `defusedxml` to prevent entity expansion attacks
 - **Download size caps** — PDF downloads (100 MB) and data imports (500 MB decompressed) are capped to prevent memory exhaustion
+- **Prompt injection protection** — uploaded documents and user inputs are wrapped in content boundary delimiters before being included in LLM prompts, preventing embedded text from being interpreted as instructions
 - **Security headers** — Content-Security-Policy, X-Frame-Options, X-Content-Type-Options on all responses
 - **Automated security scanning** — every commit is checked with bandit (static analysis), pip-audit (known CVEs), and pip-licenses (license compliance)
 
@@ -173,7 +177,7 @@ Research Mentor binds to localhost and has **no authentication**. Do not expose 
 
 ## Contributing
 
-This is an opinionated project. We don't accept unsolicited pull requests — please open an issue or reach out before contributing. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+This is an opinionated project. We don't accept unsolicited pull requests — please open an issue or reach out before contributing. See [CONTRIBUTING.md](https://github.com/authentic-research-partners/research-mentor/blob/main/CONTRIBUTING.md) for details.
 
 ## Disclaimer
 
@@ -181,4 +185,4 @@ This is an AI-powered educational tool. Like all AI systems, it can produce inac
 
 ## License
 
-[PolyForm Noncommercial 1.0.0](LICENSE.md) — free for personal and noncommercial use. Provided as-is, with no warranty or liability. Not designed for commercial use. If you want a similar solution for your organization, contact [Authentic Research Partners](https://arpconnect.com).
+[PolyForm Noncommercial 1.0.0](https://github.com/authentic-research-partners/research-mentor/blob/main/LICENSE.md) — free for personal and noncommercial use. Provided as-is, with no warranty or liability. Not designed for commercial use. If you want a similar solution for your organization, contact [Authentic Research Partners](https://arpconnect.com).

@@ -11,7 +11,7 @@ Single-user adaptation of the hosted PostgreSQL schema. Key differences:
 from __future__ import annotations
 
 # Schema version — increment when adding migrations
-SCHEMA_VERSION = 28
+SCHEMA_VERSION = 29
 
 # All tables created in a single migration for v1
 SCHEMA_V1 = """
@@ -567,6 +567,15 @@ CREATE INDEX IF NOT EXISTS idx_safety_blocked_ts
     ON safety_blocked_queries(timestamp);
 """
 
+# V29: Add analysis column to artifacts.
+# Stores AI-generated interpretations (image descriptions, pandas summaries, scipy results).
+# Distinct from extracted_text which holds raw text extraction (PDF pages, DOCX paragraphs).
+# Images: analysis only. Data: both (extracted_text = raw table, analysis = stats).
+# Papers/documents: extracted_text only.
+SCHEMA_V29 = """
+ALTER TABLE artifacts ADD COLUMN analysis TEXT;
+"""
+
 # Verify queries — each must succeed (no error) on a correctly-migrated database.
 # Used by the migration engine to confirm each migration landed correctly.
 # Patterns:
@@ -722,6 +731,9 @@ VERIFY: dict[int, list[str]] = {
         "SELECT 1 FROM sqlite_master WHERE type='index' "
         "AND name='idx_safety_blocked_ts'",
     ],
+    29: [
+        "SELECT analysis FROM artifacts LIMIT 0",
+    ],
 }
 
 # Map of version → SQL to apply
@@ -754,4 +766,5 @@ MIGRATIONS: dict[int, str] = {
     26: SCHEMA_V26,
     27: SCHEMA_V27,
     28: SCHEMA_V28,
+    29: SCHEMA_V29,
 }

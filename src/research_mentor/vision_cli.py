@@ -18,12 +18,18 @@ from research_mentor.config import load_config
 async def interpret_file(
     file_path: str | Path,
     *,
+    prompt: str | None = None,
     research_context: str | None = None,
 ) -> str | None:
     """Interpret a file using Claude Code CLI.
 
     Claude reads the file via its Read tool and provides text extraction
     with descriptions of visual elements.
+
+    Args:
+        file_path: Path to the file to interpret.
+        prompt: Pre-built vision prompt (from build_vision_prompt). Takes priority.
+        research_context: Deprecated — use prompt instead. Kept for backward compat.
 
     Returns the interpretation text, or None if the file doesn't exist.
     Raises on CLI errors (fail-fast).
@@ -41,21 +47,24 @@ async def interpret_file(
         timeout=config.claude_cli.timeout,
     )
 
-    context_prefix = (
-        f"This file is from a research project investigating: {research_context}. "
-        if research_context
-        else ""
-    )
-    prompt = (
-        f"{context_prefix}"
-        f"Read the file at {path} and provide detailed text extraction. "
-        "Transcribe all text. Describe diagrams, charts, tables, visual elements. "
-        "Return ONLY the content."
-    )
+    if prompt:
+        cli_prompt = f"Read the file at {path}.\n\n{prompt}"
+    else:
+        context_prefix = (
+            f"This file is from a research project investigating: {research_context}. "
+            if research_context
+            else ""
+        )
+        cli_prompt = (
+            f"{context_prefix}"
+            f"Read the file at {path} and provide detailed text extraction. "
+            "Transcribe all text. Describe diagrams, charts, tables, visual elements. "
+            "Return ONLY the content."
+        )
 
     t0 = time.monotonic()
     result = await cli.arun(
-        prompt,
+        cli_prompt,
         disallowed_tools=DEFAULT_DISALLOWED_TOOLS,
     )
     elapsed = time.monotonic() - t0
@@ -72,7 +81,7 @@ async def interpret_file(
     # Track usage (estimated tokens, same as ChatClaudeCLI)
     from research_mentor.db.crud import store_llm_usage_batch
 
-    est_in = len(prompt) // 4
+    est_in = len(cli_prompt) // 4
     est_out = len(text) // 4
     try:
         await store_llm_usage_batch(

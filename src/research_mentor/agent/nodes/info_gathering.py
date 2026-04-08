@@ -125,7 +125,10 @@ that information lives in past conversations, so use memory_search.
 - **artifact_search → ONLY IF:**
   - Student EXPLICITLY references uploaded documents, files, or attached materials
   - Student asks about content in their uploaded files
-  - DO NOT call for: general questions, topics not related to uploads
+  - Student asks about their data, results, images, figures, or analysis \
+(e.g. "what test should I run?", "can you look at my data?", \
+"what do you see in my gel/chart/image?")
+  - DO NOT call for: general questions, topics not related to uploads or data
 - **concept_explanation → ONLY IF:**
   - Student EXPLICITLY asks to explain a concept: "What is X?", "Explain X", "How does X work?"
   - The concept is prerequisite knowledge (not the student's research question)
@@ -282,7 +285,7 @@ async def _run_memory_search(query: str, project_id: str) -> dict[str, Any]:
     for m in memories:
         sim = m.get("similarity", 0)
         text = m["memory_text"][:150]
-        summaries.append(f"- [{sim:.2f}] {text}")
+        summaries.append(f"- [{sim:.2f}] <user_content>{text}</user_content>")
 
     return {
         "assistant": "memory_search",
@@ -320,12 +323,24 @@ async def _run_artifact_search(query: str, project_id: str) -> dict[str, Any]:
             "summary": "No relevant content found in uploaded artifacts.",
         }
 
+    # Types where the full analysis is embedded as one chunk (not a fragment)
+    _FULL_ANALYSIS_TYPES = {
+        "data", "photograph", "scientific_image", "chart", "handwriting",
+    }
+
     summaries = []
     for r in results:
         sim = r.get("similarity", 0)
         fname = r["file_name"]
-        text = r["chunk_text"][:150]
-        summaries.append(f"- [{sim:.2f}] {fname}: {text}")
+        atype = r.get("artifact_type", "")
+        desc = r.get("description", "")
+        text = r["chunk_text"][:500]
+        is_full = atype in _FULL_ANALYSIS_TYPES
+        label = "full analysis" if is_full else "extracted chunk"
+        header = f"[{sim:.2f}] {fname} ({atype}, {label})"
+        if desc:
+            header += f" — <user_content>{desc}</user_content>"
+        summaries.append(f"- {header}\n  <user_content>{text}</user_content>")
 
     return {
         "assistant": "artifact_search",

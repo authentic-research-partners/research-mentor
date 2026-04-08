@@ -1463,34 +1463,34 @@ def _print_container_status(config: object) -> None:
 
     assert isinstance(config, AppConfig)
     runtime = config.vllm.container_runtime
-    if not runtime:
-        return
+    if not runtime or not shutil.which(runtime):
+        return  # no container runtime available — skip entire section
 
     show_vllm = _has_gpu()
-    has_any = False
+    lines: list[str] = []
 
     # vLLM — only show if GPU with >=16GB VRAM is present
     if show_vllm:
-        has_any = True
-        click.echo("  Containers:")
         vllm_name = config.vllm.container_name or f"research-mentor-vllm-{config.vllm.model}"
         vllm_status = _container_status_line(
             runtime, vllm_name, f"{config.vllm.api_base}/models",
         )
-        click.echo(f"    vLLM:   {vllm_status}")
+        lines.append(f"    vLLM:   {vllm_status}")
         if "not" in vllm_status or "stopped" in vllm_status:
-            click.echo("            Start with: research-mentor vllm-container start")
+            lines.append("            Start with: research-mentor vllm-container start")
 
-    # GROBID — always show (CPU-only)
+    # GROBID (CPU-only, enhanced PDF parsing)
     grobid_name = config.grobid.container_name
     grobid_status = _container_status_line(
         runtime, grobid_name, f"{config.grobid.url}/api/isalive",
     )
-    if not has_any:
-        click.echo("  Containers:")
-    click.echo(f"    GROBID: {grobid_status}")
+    lines.append(f"    GROBID (enhanced PDF parsing): {grobid_status}")
     if "not" in grobid_status or "stopped" in grobid_status:
-        click.echo("            Start with: research-mentor grobid start")
+        lines.append("            Start with: research-mentor grobid start")
+
+    click.echo("  Services (optional):")
+    for line in lines:
+        click.echo(line)
 
     click.echo()
     if show_vllm:
@@ -1513,7 +1513,6 @@ def _print_startup_banner(api_url: str) -> None:
     click.echo(f"  Research Mentor (v{__version__}) is running!")
     click.echo()
     click.echo(f"  Open in browser: {api_url}")
-    click.echo(f"  Backend: {config.backend}")
     click.echo()
     _print_container_status(config)
     click.echo("  Press Ctrl+C to stop the server.")

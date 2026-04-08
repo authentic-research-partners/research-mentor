@@ -349,6 +349,14 @@ class VisionConfig(BaseModel):
     max_new_tokens: int = Field(
         default_factory=lambda: _VISION_DEFAULTS.get("max_new_tokens", 512), ge=64, le=2048,
     )
+    max_images_per_artifact: int = Field(
+        default_factory=lambda: _VISION_DEFAULTS.get("max_images_per_artifact", 20),
+        ge=1, le=100,
+    )
+    max_image_dimension: int = Field(
+        default_factory=lambda: _VISION_DEFAULTS.get("max_image_dimension", 1536),
+        ge=256, le=4096,
+    )
     # API backend
     api_provider: str = Field(
         default_factory=lambda: _VISION_DEFAULTS.get("api_provider", ""),

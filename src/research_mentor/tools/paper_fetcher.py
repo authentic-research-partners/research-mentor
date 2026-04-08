@@ -1,7 +1,7 @@
 """Fetch paper introductions from open-access PDFs for richer gap mining.
 
 Downloads PDFs for top-cited papers, extracts the introduction section
-via Docling/GROBID, and caches results to disk. Sources are tried in
+via GROBID/pdfplumber, and caches results to disk. Sources are tried in
 priority order — trusted, high-quality sources first; less reliable last.
 
 Used by Gaps Phase 2 (deep dive) to give the mining strategy LLM richer
@@ -151,7 +151,7 @@ def build_pdf_url(paper: dict[str, Any]) -> str | None:
 # Introduction extraction
 # ---------------------------------------------------------------------------
 
-# Heading patterns for introduction sections in Docling/GROBID markdown output.
+# Heading patterns for introduction sections in GROBID/pdfplumber markdown output.
 _INTRO_PATTERNS = [
     r"^#{1,3}\s+\d*\.?\s*Introduction",
     r"^#{1,3}\s+I\.\s+INTRODUCTION",
@@ -598,7 +598,7 @@ async def fetch_paper_intro(
 
     logger.debug("Downloaded PDF via {} for {}", source_name, cache_key)
 
-    # Extract text via Docling/GROBID (sync — run in thread)
+    # Extract text via GROBID/pdfplumber (sync — run in thread)
     tmp_path: Path | None = None
     try:
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:

@@ -342,12 +342,13 @@ async def import_data(file: UploadFile) -> ImportResponse:
                     """INSERT INTO artifacts
                        (id, project_id, artifact_type, file_name, file_path,
                         mime_type, file_size_bytes, description, extracted_text,
-                        metadata, created_at, updated_at)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                        analysis, metadata, created_at, updated_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (aid, pid, art.get("artifact_type", ""),
                      fname, file_path, art.get("mime_type", ""),
                      art.get("file_size_bytes", 0), art.get("description"),
-                     art.get("extracted_text"), _json_str(art.get("metadata", {})),
+                     art.get("extracted_text"), art.get("analysis"),
+                     _json_str(art.get("metadata", {})),
                      art.get("created_at"), art.get("updated_at")),
                 )
                 counts["artifacts"] += 1

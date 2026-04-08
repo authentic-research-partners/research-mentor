@@ -28,7 +28,7 @@ _SESSION_UPDATABLE = frozenset({
 })
 _ARTIFACT_UPDATABLE = frozenset({
     "title", "description", "file_name", "file_path", "file_type", "file_size",
-    "extracted_text", "metadata",
+    "extracted_text", "analysis", "metadata",
 })
 
 
@@ -1081,7 +1081,7 @@ async def search_similar_artifacts(
         cursor = await db.execute(
             """
             SELECT ac.artifact_id, a.file_name, a.description,
-                   ac.chunk_text, ae.distance
+                   a.artifact_type, ac.chunk_text, ae.distance
             FROM (
                 SELECT rowid, distance
                 FROM artifact_embeddings
@@ -1104,6 +1104,7 @@ async def search_similar_artifacts(
             "artifact_id": r["artifact_id"],
             "file_name": r["file_name"],
             "description": r["description"],
+            "artifact_type": r["artifact_type"],
             "chunk_text": r["chunk_text"],
             "similarity": round(1.0 - r["distance"], 4),
         }
@@ -2635,10 +2636,10 @@ async def store_collaboration_opportunity(
         cfg = load_config()
         expiry_days = int(cfg.collaboration.result_expiry_days)
         # Compute expiry in Python to avoid SQL interpolation
-        from datetime import datetime, timedelta, timezone
+        from datetime import UTC, datetime, timedelta
 
         expires_at = (
-            datetime.now(timezone.utc) + timedelta(days=expiry_days)
+            datetime.now(UTC) + timedelta(days=expiry_days)
         ).isoformat()
 
     async with get_db() as db:

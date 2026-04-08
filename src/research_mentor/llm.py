@@ -78,11 +78,30 @@ THINKING_PRESETS: dict[str, ThinkingPreset] = {
 }
 
 
+# --- Test-mode guard ---
+#
+# When _test_mode is True, structured_call() and get_chat_llm() raise
+# RuntimeError instead of making real LLM calls. This catches unmocked
+# call paths in tests — any code that reaches these functions without a
+# mock in place gets a loud failure with a helpful message.
+#
+# Enable in conftest: monkeypatch.setattr(research_mentor.llm, "_test_mode", True)
+# Since the function body reads this variable at call time, it works even
+# when other modules have already imported structured_call by name.
+
+_test_mode: bool = False
+
+
 # --- Public API ---
 
 
 def get_chat_llm(**overrides: Any) -> BaseChatModel:
     """Get a chat LLM for free-text generation (guides, experts, presenter)."""
+    if _test_mode:
+        raise RuntimeError(
+            "get_chat_llm() called in test mode without a mock. "
+            "Patch get_chat_llm in the calling module to prevent real LLM calls."
+        )
     config = load_config()
     backend = overrides.pop("backend", config.backend)
 
@@ -148,6 +167,7 @@ async def structured_call[T: BaseModel](
           Prompt example + json_schema constraint ensures correct output.
     Claude CLI: Prompt engineering + JSON parsing.
 
+    Raises RuntimeError in test mode (_test_mode=True) if called without a mock.
     Args:
         thinking: Preset name from THINKING_PRESETS ("off", "low", "medium", "high").
             Only affects Qwen3 thinking models — ignored for Gemma and Claude.
@@ -156,6 +176,11 @@ async def structured_call[T: BaseModel](
         raise ValueError(
             f"Unknown thinking preset: {thinking!r}. "
             f"Use one of: {', '.join(THINKING_PRESETS)}"
+        )
+    if _test_mode:
+        raise RuntimeError(
+            f"structured_call({schema.__name__}) called in test mode without a mock. "
+            f"Patch structured_call in the calling module to prevent real LLM calls."
         )
     preset = THINKING_PRESETS[thinking]
     thinking_budget: int = preset["thinking_budget"]  # type: ignore[assignment]

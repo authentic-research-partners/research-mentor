@@ -10,8 +10,11 @@ Parallel fan-outs maximize GPU utilization via vLLM continuous batching:
 - Planning: planner + info_gathering in parallel (no data dependency)
 - Info gathering internals: up to 5 concurrent assistants
 
-No input_validator — local system, no jailbreak threat. Input safety review
-handles pedagogical concerns (dangerous experiments, ethics) not security.
+No input_validator node — local single-user system, low jailbreak risk.
+Input safety review handles pedagogical concerns (dangerous experiments, ethics).
+Prompt injection defense: untrusted content (uploaded docs, memories, user inputs)
+is wrapped in <user_content> delimiters + anti-injection instructions in guide prompts.
+See docs/SECURITY_REVIEW.md Finding 9.
 """
 
 from __future__ import annotations

@@ -5,9 +5,11 @@ Always runs on CPU — must not compete with vLLM for GPU VRAM.
 
 Arctic Embed v2 uses custom HuggingFace model code (GTE architecture), so loading
 requires ``trust_remote_code=True``.  The model's default config enables xformers-based
-memory-efficient attention, which is CUDA-only.  We override this to standard (eager)
-attention via ``config_kwargs`` — mathematically identical output, just without the
-xformers dependency.
+memory-efficient attention (CUDA-only) and input unpadding (an optimization paired with
+xformers).  We override both to standard (eager) attention via ``config_kwargs`` —
+mathematically identical output, just without the xformers dependency.  Both flags must
+be disabled together: ``unpad_inputs=True`` with ``use_memory_efficient_attention=False``
+causes garbage ``position_ids`` in the GTE embedding layer.
 
 Public API is async (``embed_text`` / ``embed_texts``) — runs the synchronous
 sentence-transformers encode in a thread pool so it never blocks the event loop.
@@ -26,6 +28,40 @@ from sqlite_vec import serialize_float32
 
 if TYPE_CHECKING:
     from sentence_transformers import SentenceTransformer
+
+
+def _fix_gte_buffers(model: SentenceTransformer) -> None:
+    """Reinitialize GTE model buffers corrupted by weight loading.
+
+    GTE-architecture models (Arctic Embed v2) use ``persistent=False`` buffers for
+    position_ids and rotary cos/sin caches.  With transformers 5.x + torch 2.x, these
+    buffers contain uninitialized memory after ``from_pretrained`` loads weights.
+    Reinitializing them from scratch fixes the garbage values.
+
+    Safe to call on non-GTE models (no-op) and on mocked models in tests.
+    """
+    try:
+        from typing import Any as _Any
+
+        import torch
+
+        auto_model: _Any = model[0].auto_model
+        embeddings_layer: _Any = auto_model.embeddings
+        rotary = getattr(embeddings_layer, "rotary_emb", None)
+        if rotary is None or not isinstance(rotary, torch.nn.Module):
+            return
+
+        max_pos: int = auto_model.config.max_position_embeddings
+        embeddings_layer.register_buffer(
+            "position_ids", torch.arange(max_pos), persistent=False,
+        )
+        rotary._set_cos_sin_cache(
+            seq_len=rotary.max_seq_len_cached,
+            device=rotary.inv_freq.device,
+            dtype=torch.get_default_dtype(),
+        )
+    except (AttributeError, TypeError, IndexError):
+        pass
 
 
 def _load_sentence_transformer(model_name: str) -> SentenceTransformer:
@@ -58,7 +94,10 @@ def _load_sentence_transformer(model_name: str) -> SentenceTransformer:
                 model_name,
                 device="cpu",
                 trust_remote_code=True,
-                config_kwargs={"use_memory_efficient_attention": False},
+                config_kwargs={
+                    "use_memory_efficient_attention": False,
+                    "unpad_inputs": False,
+                },
             )
     finally:
         tf_logger.setLevel(old_level)
@@ -67,6 +106,8 @@ def _load_sentence_transformer(model_name: str) -> SentenceTransformer:
                 os.environ.pop(k, None)
             else:
                 os.environ[k] = v
+
+    _fix_gte_buffers(model)
 
     return model
 

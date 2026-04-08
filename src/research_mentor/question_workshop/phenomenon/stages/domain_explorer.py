@@ -435,7 +435,7 @@ async def explore_domain(
         user_prompt_text = f"""Field: {field_capitalized}
 Problem Type: {problem_type_label}
 Domain: {domain}
-User suggestion: "{user_suggestion}"
+User suggestion: <user_content>{user_suggestion}</user_content>
 
 Please identify 2-3 interesting {field} phenomena related to this domain and suggestion, suitable for {problem_type_label} investigation."""
     elif domain:
@@ -460,7 +460,7 @@ Please identify 2-3 interesting phenomena in this {field} domain suitable for {p
     elif user_suggestion:
         user_prompt_text = f"""Field: {field_capitalized}
 Problem Type: {problem_type_label}
-User suggestion: "{user_suggestion}"
+User suggestion: <user_content>{user_suggestion}</user_content>
 
 Please identify which {field} domain(s) this relates to and find 2-3 interesting phenomena similar to this suggestion, suitable for {problem_type_label} investigation."""
     else:

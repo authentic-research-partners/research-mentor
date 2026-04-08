@@ -89,6 +89,10 @@ For most requests, guide student to search themselves rather than providing info
 - DON'T: List all relevant resources
 - DO: "Check the documentation for X. Which sections apply to your project?"
 - Student evaluates relevance themselves
+- Data analysis: "You have two groups in your data. What statistical test compares
+  two group means? What assumptions does it make?" — guide test selection
+- Image analysis: "Look at your gel image. What do you notice about the bands?
+  How do they compare across lanes?" — guide observation before interpretation
 
 **Key principle:** At 20-60%, you guide HOW to find information, not provide analyzed information. Balance hints (40%) with questions (60%) to develop independent research skills.
 

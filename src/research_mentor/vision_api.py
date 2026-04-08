@@ -21,13 +21,19 @@ from research_mentor.config import load_config
 async def interpret_file(
     file_path: str | Path,
     *,
+    prompt: str | None = None,
     research_context: str | None = None,
 ) -> str | None:
     """Interpret a file using a remote OpenAI-compatible vision API.
 
     Reads the file, base64-encodes it, and sends it as a vision message.
-    Returns the model's text interpretation, or None if the file doesn't exist.
 
+    Args:
+        file_path: Path to the file to interpret.
+        prompt: Pre-built vision prompt (from build_vision_prompt). Takes priority.
+        research_context: Deprecated — use prompt instead. Kept for backward compat.
+
+    Returns the model's text interpretation, or None if the file doesn't exist.
     Raises on API errors (fail-fast).
     """
 
@@ -56,6 +62,18 @@ async def interpret_file(
     b64_data = base64.b64encode(file_bytes).decode("ascii")
     data_uri = f"data:{mime_type};base64,{b64_data}"
 
+    if not prompt:
+        prompt = (
+            (
+                "This file is from a research project investigating: "
+                f"{research_context}. "
+                if research_context
+                else ""
+            )
+            + "Examine this file. Transcribe all text. "
+            "Describe diagrams, charts, tables, visual elements."
+        )
+
     client = openai.AsyncOpenAI(
         base_url=vcfg.api_base_url,
         api_key=api_key,
@@ -75,16 +93,7 @@ async def interpret_file(
                     },
                     {
                         "type": "text",
-                        "text": (
-                            (
-                                "This file is from a research project investigating: "
-                                f"{research_context}. "
-                                if research_context
-                                else ""
-                            )
-                            + "Examine this file. Transcribe all text. "
-                            "Describe diagrams, charts, tables, visual elements."
-                        ),
+                        "text": prompt,
                     },
                 ],
             },
