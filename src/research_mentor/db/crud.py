@@ -369,32 +369,26 @@ async def search_similar_memories(
 
     async with get_db() as db:
         # vec0 KNN requires `k = ?` in WHERE (not SQL LIMIT).
-        # Filter by project_id and max distance in outer query.
+        # Pre-filter with `rowid IN (...)` to scope the vector scan to this
+        # project's memories.  Without it, a global KNN scan returns top-K
+        # across ALL projects — other projects' memories can dominate results
+        # and push this project's matches out entirely.
         cursor = await db.execute(
             """
-            SELECT id, memory_text, memory_type, importance, tags,
-                   created_at, distance
-            FROM (
-                SELECT
-                    cm.id,
-                    cm.memory_text,
-                    cm.memory_type,
-                    cm.importance,
-                    cm.tags,
-                    cm.created_at,
-                    cm.project_id,
-                    me.distance
-                FROM memory_embeddings me
-                INNER JOIN conversation_memories cm ON cm.rowid = me.rowid
-                WHERE me.embedding MATCH ?
-                    AND k = ?
-            )
-            WHERE project_id = ?
-                AND distance <= ?
-            ORDER BY distance
+            SELECT cm.id, cm.memory_text, cm.memory_type, cm.importance,
+                   cm.tags, cm.created_at, me.distance
+            FROM memory_embeddings me
+            INNER JOIN conversation_memories cm ON cm.rowid = me.rowid
+            WHERE me.embedding MATCH ?
+                AND k = ?
+                AND me.rowid IN (
+                    SELECT rowid FROM conversation_memories WHERE project_id = ?
+                )
+                AND me.distance <= ?
+            ORDER BY me.distance
             LIMIT ?
             """,
-            (query_embedding, limit * 4, project_id, max_distance, limit),
+            (query_embedding, limit, project_id, max_distance, limit),
         )
         rows = await cursor.fetchall()
 
@@ -668,14 +662,15 @@ async def create_session(project_id: str, **kwargs: Any) -> dict[str, Any]:
         await db.execute(
             """
             INSERT INTO sessions (session_id, project_id, title, persona_id,
-                                  language, metadata)
-            VALUES (?, ?, ?, ?, ?, ?)
+                                  is_active, language, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 session_id,
                 project_id,
                 kwargs.get("title"),
                 kwargs.get("persona_id"),
+                kwargs.get("is_active", 1),
                 kwargs.get("language", "en"),
                 json.dumps(metadata),
             ),
@@ -802,12 +797,12 @@ async def create_workshop_session(
         await db.execute(
             """
             INSERT INTO workshop_sessions
-                (session_id, project_id, workshop_type, language,
+                (session_id, project_id, workshop_type, status, language,
                  current_stage, title, metadata)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                sid, project_id, workshop_type, language,
+                sid, project_id, workshop_type, "active", language,
                 current_stage, title, json.dumps(metadata or {}),
             ),
         )
@@ -1078,24 +1073,28 @@ async def search_similar_artifacts(
     max_distance = 1.0 - threshold
 
     async with get_db() as db:
+        # Pre-filter with `rowid IN (...)` to scope the vector scan to this
+        # project's artifact chunks.  Without it, a global KNN scan returns
+        # top-K across ALL projects — other projects' chunks can dominate.
         cursor = await db.execute(
             """
             SELECT ac.artifact_id, a.file_name, a.description,
                    a.artifact_type, ac.chunk_text, ae.distance
-            FROM (
-                SELECT rowid, distance
-                FROM artifact_embeddings
-                WHERE embedding MATCH ?
-                    AND k = ?
-            ) ae
+            FROM artifact_embeddings ae
             INNER JOIN artifact_chunks ac ON ac.id = ae.rowid
             INNER JOIN artifacts a ON a.id = ac.artifact_id
-            WHERE a.project_id = ?
+            WHERE ae.embedding MATCH ?
+                AND k = ?
+                AND ae.rowid IN (
+                    SELECT ac2.id FROM artifact_chunks ac2
+                    JOIN artifacts a2 ON a2.id = ac2.artifact_id
+                    WHERE a2.project_id = ?
+                )
                 AND ae.distance <= ?
             ORDER BY ae.distance
             LIMIT ?
             """,
-            (query_embedding, limit * 4, project_id, max_distance, limit),
+            (query_embedding, limit, project_id, max_distance, limit),
         )
         rows = await cursor.fetchall()
 
@@ -1615,8 +1614,8 @@ async def store_llm_usage(record: dict[str, Any]) -> None:
             """
             INSERT INTO llm_usage
                 (backend, provider, model, prompt_tokens, completion_tokens,
-                 session_id, project_id, call_type, elapsed_seconds, error)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 session_id, project_id, call_type, elapsed_seconds, error, purpose)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 record["backend"],
@@ -1626,9 +1625,10 @@ async def store_llm_usage(record: dict[str, Any]) -> None:
                 record.get("completion_tokens", 0),
                 record.get("session_id"),
                 record.get("project_id"),
-                record.get("call_type", "chat"),
+                record.get("call_type", "office"),
                 record.get("elapsed_seconds"),
                 record.get("error", 0),
+                record.get("purpose", "office"),
             ),
         )
         await db.commit()
@@ -1662,7 +1662,7 @@ async def store_llm_usage_batch(
                     r.get("completion_tokens", 0),
                     session_id or r.get("session_id"),
                     project_id or r.get("project_id"),
-                    r.get("call_type", "chat"),
+                    r.get("call_type", "office"),
                     r.get("elapsed_seconds"),
                     r.get("error", 0),
                     purpose,
@@ -2570,16 +2570,24 @@ async def search_retraction_watch_semantic(
     """
     max_distance = 1.0 - threshold
 
-    # Build nature filter clause
-    nature_clause = ""
+    # Build rowid pre-filter to scope vec0 scan by nature.
+    # sqlite-vec doesn't support WHERE on joined columns during MATCH —
+    # use `rowid IN (...)` to restrict the vector scan to matching rows.
+    rowid_clause = ""
     nature_params: list[Any] = []
     if nature is not None:
         if isinstance(nature, str):
-            nature_clause = "AND rw.retraction_nature = ?"
+            rowid_clause = (
+                "AND vec.rowid IN "
+                "(SELECT id FROM retraction_watch WHERE retraction_nature = ?)"
+            )
             nature_params = [nature]
         else:
             placeholders = ", ".join("?" * len(nature))
-            nature_clause = f"AND rw.retraction_nature IN ({placeholders})"
+            rowid_clause = (
+                "AND vec.rowid IN "  # nosec B608 — placeholders is "?, ?, ..." from len()
+                f"(SELECT id FROM retraction_watch WHERE retraction_nature IN ({placeholders}))"
+            )
             nature_params = list(nature)
 
     async with get_db() as db:
@@ -2589,20 +2597,18 @@ async def search_retraction_watch_semantic(
                 JOIN retraction_watch rw ON rw.id = vec.rowid
                 WHERE vec.embedding MATCH ?
                   AND vec.k = ?
-                  {nature_clause}
-                ORDER BY vec.distance ASC""",  # nosec B608 — nature_clause from hardcoded filter
-            [query_embedding, limit * 3, *nature_params],
+                  {rowid_clause}
+                  AND vec.distance <= ?
+                ORDER BY vec.distance ASC
+                LIMIT ?""",  # nosec B608 — rowid_clause from hardcoded filter
+            [query_embedding, limit, *nature_params, max_distance, limit],
         )
         rows = await cursor.fetchall()
 
-    results: list[dict[str, Any]] = []
-    for row in rows:
-        if row["distance"] <= max_distance and len(results) < limit:
-            d = dict(row)
-            d["similarity"] = 1.0 - d.pop("distance")
-            results.append(d)
-
-    return results
+    return [
+        {**dict(row), "similarity": 1.0 - row["distance"]}
+        for row in rows
+    ]
 
 
 # ---------------------------------------------------------------------------

@@ -218,6 +218,12 @@ max_images_per_artifact = 20
 # Images are resized preserving aspect ratio. Bounds VRAM for local models, token cost for API.
 max_image_dimension = 1536
 
+# Minimum image size filters applied during PDF image extraction. Tiny images are
+# usually decorative (logos, icons, rules) and waste vision-backend time.
+# An image is skipped if EITHER filter trips.
+min_image_pixels = 40000    # 200 * 200 — total pixels (width * height)
+min_image_bytes = 5120      # 5 KiB — file size on disk after extraction
+
 # --- API backend (OpenAI-compatible vision API, independent credentials) ---
 api_provider = ""                                    # display name (e.g. "openai", "google")
 api_base_url = ""                                    # OpenAI-compatible endpoint

@@ -6,6 +6,12 @@ text extraction produces no text (pure images: photos, diagrams, charts, handwri
 Always runs on CPU — must not compete with vLLM for GPU VRAM.
 CPU inference is slow (~15-30s per image) but acceptable at upload time.
 
+**Sync API — must be wrapped in asyncio.to_thread() when called from async code.**
+``describe_image`` is a sync function that runs blocking CPU inference. Calling it
+directly from an async context will freeze the FastAPI event loop for the full
+inference duration, making the server unresponsive to all other requests.
+See ``text_extraction._describe_with_backend`` for the correct usage.
+
 Same lazy-singleton pattern as embeddings.py.
 """
 
@@ -185,13 +191,18 @@ def describe_image(
 
     from PIL import Image
 
-    image = Image.open(path).convert("RGB")
+    from research_mentor.text_extraction import downscale_pil_image
+
+    # Defensive: callers normally pre-resize, but we re-check in case of direct calls.
+    # downscale_pil_image is a no-op if the image already fits within max_image_dimension.
+    image = downscale_pil_image(
+        Image.open(path).convert("RGB"), config.vision.max_image_dimension,
+    )
 
     text_input = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = processor(
         text=[text_input],
         images=[image],
-        padding=True,
         return_tensors="pt",
     )
     inputs = inputs.to("cpu")

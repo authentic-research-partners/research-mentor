@@ -24,7 +24,7 @@ import aiosqlite
 import sqlite_vec
 from loguru import logger
 
-from research_mentor.db.schema import MIGRATIONS, SCHEMA_VERSION, VERIFY
+from research_mentor.db.schema import FK_OFF_MIGRATIONS, MIGRATIONS, SCHEMA_VERSION, VERIFY
 
 BACKUP_DIR_NAME = "backups"
 BACKUP_MAX_AGE_DAYS = 30
@@ -133,8 +133,24 @@ async def run_migration(db_path: Path) -> MigrationResult:
                 if version not in MIGRATIONS:
                     continue
 
+                # Table rebuilds on FK-parent tables need foreign_keys OFF.
+                # The pragma must be set outside a transaction.
+                needs_fk_off = version in FK_OFF_MIGRATIONS
+                if needs_fk_off:
+                    await db.execute("PRAGMA foreign_keys=OFF")
+
                 logger.info("Applying migration v{}", version)
                 await _apply_migration_sql(db, MIGRATIONS[version], version)
+
+                if needs_fk_off:
+                    # Verify no broken FK references after rebuild
+                    cursor = await db.execute("PRAGMA foreign_key_check")
+                    violations = await cursor.fetchall()
+                    if violations:
+                        raise MigrationError(
+                            f"FK integrity violation after v{version}: {violations}"
+                        )
+                    await db.execute("PRAGMA foreign_keys=ON")
 
                 # Verify this migration
                 verify_queries = VERIFY.get(version, [])

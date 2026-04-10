@@ -21,7 +21,7 @@ import os
 import re
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from loguru import logger
 
@@ -68,23 +68,68 @@ async def extract_text(file_path: str | Path) -> str | None:
     if suffix in _DOCX_EXTENSIONS:
         return await asyncio.to_thread(_extract_docx, path)
     if suffix in _CSV_EXTENSIONS:
-        return _extract_csv(path, delimiter="\t" if suffix == ".tsv" else ",")
+        return await asyncio.to_thread(
+            _extract_csv, path, delimiter="\t" if suffix == ".tsv" else ",",
+        )
     if suffix in _IMAGE_EXTENSIONS:
         return None  # images need vision backends, not text extraction
     if suffix in _TEXT_EXTENSIONS:
-        return _extract_plain(path)
+        return await asyncio.to_thread(_extract_plain, path)
 
     # Unknown format — try plain read as last resort
-    return _extract_plain(path)
+    return await asyncio.to_thread(_extract_plain, path)
 
 
-def extract_images(file_path: str | Path) -> list[Path]:
+def _image_too_small(img_path: Path, min_pixels: int, min_bytes: int) -> bool:
+    """Return True if ``img_path`` falls below either threshold.
+
+    Either threshold is disabled when set to ``0``. A PIL open failure is
+    treated as "too small" — a file we can't read is not worth shipping to a
+    vision backend. Never raises.
+    """
+    if min_bytes > 0:
+        try:
+            if img_path.stat().st_size < min_bytes:
+                return True
+        except OSError:
+            return True
+    if min_pixels > 0:
+        try:
+            from PIL import Image
+
+            with Image.open(img_path) as img:
+                w, h = img.size
+            if w * h < min_pixels:
+                return True
+        except Exception:
+            return True
+    return False
+
+
+def extract_images(
+    file_path: str | Path,
+    *,
+    min_pixels: int = 0,
+    min_bytes: int = 0,
+) -> list[Path]:
     """Extract raster images embedded in a PDF via pypdfium2.
 
     Saves each image to a temporary directory and returns their paths.
-    The caller is responsible for cleanup.
+    The caller is responsible for cleaning up the temp directory containing
+    the returned paths.
 
-    Returns an empty list for non-PDF files or if no images are found.
+    Args:
+        file_path: PDF file to extract images from.
+        min_pixels: Drop images with total pixel count (width * height) below
+            this threshold. Tiny images are usually decorative (icons, rules,
+            logos) and waste vision-backend time. ``0`` disables the filter.
+        min_bytes: Drop images whose extracted PNG file is smaller than this
+            many bytes. ``0`` disables the filter.
+
+    Returns an empty list for non-PDF files, if no images are found, or if
+    extraction fails for any reason. **This function never raises** — corrupt
+    or unsupported PDFs must not crash artifact upload, since text extraction
+    may still have succeeded for the same file.
     """
     path = Path(file_path)
     if path.suffix.lower() not in _PDF_EXTENSIONS:
@@ -94,8 +139,10 @@ def extract_images(file_path: str | Path) -> list[Path]:
 
     try:
         doc = pdfium.PdfDocument(str(path))
-    except Exception:
-        logger.debug("Failed to open PDF for image extraction: {}", path.name)
+    except Exception as e:
+        logger.warning(
+            "Failed to open PDF for image extraction: {} ({})", path.name, e,
+        )
         return []
 
     images: list[Path] = []
@@ -104,21 +151,51 @@ def extract_images(file_path: str | Path) -> list[Path]:
     try:
         i = 0
         for page_idx in range(len(doc)):
-            page = doc[page_idx]
-            for obj in page.get_objects():
+            try:
+                page = doc[page_idx]
+                page_objects = list(page.get_objects())
+            except Exception as e:
+                # Malformed page — skip and continue with the rest of the PDF
+                logger.warning(
+                    "Failed to read objects on page {} of {}: {}",
+                    page_idx, path.name, e,
+                )
+                continue
+
+            for obj in page_objects:
                 if not isinstance(obj, pdfium.PdfImage):
                     continue
                 try:
                     img_path = tmp_dir / f"image_{i}.png"
                     obj.extract(str(img_path))
+                    if _image_too_small(img_path, min_pixels, min_bytes):
+                        img_path.unlink(missing_ok=True)
+                        continue
                     images.append(img_path)
                     i += 1
-                except Exception:
+                except Exception as e:
                     logger.debug(
-                        "Failed to extract image {} from page {}", i, page_idx,
+                        "Failed to extract image {} from page {}: {}",
+                        i, page_idx, e,
                     )
+    except Exception as e:
+        # Catch-all: any unexpected failure (broken iterator, native crash inside
+        # pdfium bindings, etc.) must not propagate. Return whatever was extracted.
+        logger.warning(
+            "Unexpected failure during image extraction from {}: {}", path.name, e,
+        )
     finally:
-        doc.close()
+        try:
+            doc.close()
+        except Exception:
+            pass
+
+    # If nothing was extracted, clean up the empty temp dir so we don't leak it.
+    # The caller's cleanup logic only runs when image_paths is non-empty.
+    if not images:
+        import shutil
+
+        shutil.rmtree(tmp_dir, ignore_errors=True)
 
     logger.debug("Extracted {} images from {}", len(images), path.name)
     return images
@@ -221,8 +298,27 @@ def build_vision_prompt(
     return "\n\n".join(parts)
 
 
+def downscale_pil_image(image: Any, max_dimension: int) -> Any:
+    """Downscale a PIL image so its longest edge is at most max_dimension.
+
+    Preserves aspect ratio and uses LANCZOS for high-quality downscaling.
+    Returns the original image unchanged if it already fits.
+
+    This is the canonical in-memory resize helper — both ``resize_image_if_needed``
+    (path-based wrapper) and ``vision.describe_image`` use it.
+    """
+    from PIL import Image
+
+    w, h = image.size
+    if max(w, h) <= max_dimension:
+        return image
+    ratio = max_dimension / max(w, h)
+    new_w, new_h = int(w * ratio), int(h * ratio)
+    return image.resize((new_w, new_h), Image.LANCZOS)  # type: ignore[attr-defined]
+
+
 def resize_image_if_needed(file_path: str | Path, max_dimension: int) -> Path:
-    """Resize an image if its longest edge exceeds max_dimension.
+    """Resize an image file if its longest edge exceeds max_dimension.
 
     Returns the path to the (possibly resized) image. If resized, the image
     is saved to a temp file; the caller is responsible for cleanup.
@@ -234,16 +330,17 @@ def resize_image_if_needed(file_path: str | Path, max_dimension: int) -> Path:
     try:
         with Image.open(path) as img:
             w, h = img.size
-            if max(w, h) <= max_dimension:
+            resized_img = downscale_pil_image(img, max_dimension)
+            if resized_img is img:
                 return path
-            img.thumbnail((max_dimension, max_dimension))
+            new_w, new_h = resized_img.size
             fd, tmp_str = tempfile.mkstemp(suffix=path.suffix, prefix="rm_resized_")
             os.close(fd)
             tmp = Path(tmp_str)
-            img.save(str(tmp))
+            resized_img.save(str(tmp))
             logger.debug(
                 "Resized image {}x{} → {}x{}: {}",
-                w, h, img.size[0], img.size[1], path.name,
+                w, h, new_w, new_h, path.name,
             )
             return tmp
     except Exception:
@@ -676,8 +773,11 @@ async def _describe_image(
 
     vision_prompt = prompt or _DEFAULT_PROMPT
 
-    # Resize before sending to any backend (cap at max_image_dimension, default 1536px)
-    resized = resize_image_if_needed(file_path, config.vision.max_image_dimension)
+    # Resize before sending to any backend (cap at max_image_dimension, default 1536px).
+    # PIL decode + resize is CPU-bound — run in a thread to keep the event loop responsive.
+    resized = await asyncio.to_thread(
+        resize_image_if_needed, file_path, config.vision.max_image_dimension,
+    )
     try:
         return await _describe_with_backend(resized, backend, prompt=vision_prompt)
     finally:
@@ -703,7 +803,8 @@ async def _describe_with_backend(
             )
             return None
 
-        description = describe_image(file_path, prompt=prompt)
+        # CPU-bound inference — run in a thread so the event loop stays responsive
+        description = await asyncio.to_thread(describe_image, file_path, prompt=prompt)
         if not description:
             return None
         return f"[Image description]\n\n{description}"

@@ -143,7 +143,7 @@ async def _extract_and_embed(
             from research_mentor.data_analysis import analyze_dataframe
 
             profile = await crud.get_student_profile()
-            df = _read_dataframe(file_path)
+            df = await asyncio.to_thread(_read_dataframe, file_path)
             if df is not None and not df.empty:
                 stats_text, _results = await analyze_dataframe(
                     df,
@@ -210,7 +210,12 @@ async def _extract_and_embed(
 
     # Extract and describe raster images from PDFs
     if config.vision.enabled:
-        image_paths = await asyncio.to_thread(extract_images, file_path)
+        image_paths = await asyncio.to_thread(
+            extract_images,
+            file_path,
+            min_pixels=config.vision.min_image_pixels,
+            min_bytes=config.vision.min_image_bytes,
+        )
         max_images = config.vision.max_images_per_artifact
         if len(image_paths) > max_images:
             skipped = len(image_paths) - max_images
@@ -221,13 +226,12 @@ async def _extract_and_embed(
                 f"{skipped} were skipped to keep processing time reasonable."
             )
         try:
-            for img_path in image_paths:
-                description = await extract_text_or_describe(
-                    img_path, config,
-                    research_context=research_context,
-                    artifact_type="paper_figure",
-                    artifact_description=artifact_description,
-                )
+            descriptions = await _describe_images(
+                image_paths, config,
+                research_context=research_context,
+                artifact_description=artifact_description,
+            )
+            for description in descriptions:
                 if description:
                     img_chunks = chunk_text(
                         description,
@@ -254,6 +258,28 @@ async def _extract_and_embed(
     refetched = await crud.get_artifact(artifact_id)
     assert refetched is not None
     return refetched, warnings
+
+
+async def _describe_images(
+    image_paths: list[Path],
+    config: Any,
+    *,
+    research_context: str | None = None,
+    artifact_description: str | None = None,
+) -> list[str | None]:
+    """Describe multiple images concurrently using the configured vision backend."""
+    from research_mentor.text_extraction import extract_text_or_describe
+
+    results = await asyncio.gather(*(
+        extract_text_or_describe(
+            img_path, config,
+            research_context=research_context,
+            artifact_type="paper_figure",
+            artifact_description=artifact_description,
+        )
+        for img_path in image_paths
+    ))
+    return list(results)
 
 
 async def _require_project(project_id: str) -> dict[str, Any]:
@@ -482,7 +508,7 @@ async def analyze_artifact(
 
     from research_mentor.data_analysis import analyze_dataframe
 
-    df = _read_dataframe(str(path))
+    df = await asyncio.to_thread(_read_dataframe, str(path))
     if df is None or df.empty:
         raise HTTPException(400, "Could not read data from file")
 

@@ -357,6 +357,14 @@ class VisionConfig(BaseModel):
         default_factory=lambda: _VISION_DEFAULTS.get("max_image_dimension", 1536),
         ge=256, le=4096,
     )
+    min_image_pixels: int = Field(
+        default_factory=lambda: _VISION_DEFAULTS.get("min_image_pixels", 200 * 200),
+        ge=0,
+    )
+    min_image_bytes: int = Field(
+        default_factory=lambda: _VISION_DEFAULTS.get("min_image_bytes", 5 * 1024),
+        ge=0,
+    )
     # API backend
     api_provider: str = Field(
         default_factory=lambda: _VISION_DEFAULTS.get("api_provider", ""),

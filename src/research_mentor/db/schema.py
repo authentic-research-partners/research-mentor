@@ -11,7 +11,7 @@ Single-user adaptation of the hosted PostgreSQL schema. Key differences:
 from __future__ import annotations
 
 # Schema version — increment when adding migrations
-SCHEMA_VERSION = 29
+SCHEMA_VERSION = 32
 
 # All tables created in a single migration for v1
 SCHEMA_V1 = """
@@ -576,6 +576,228 @@ SCHEMA_V29 = """
 ALTER TABLE artifacts ADD COLUMN analysis TEXT;
 """
 
+# V30: Fix stale DEFAULT on generated_problems.workshop_type ('one_shot' was renamed to
+# 'phenomenon' in V19 but the column default was never updated). Also adds CHECK
+# constraints on workshop_sessions.status and generated_problems.workshop_type to
+# prevent invalid values at the DB level. Both require table rebuild since SQLite
+# cannot ALTER column defaults or add constraints to existing columns.
+SCHEMA_V30 = """
+-- Rebuild generated_problems with corrected default + CHECK constraint
+CREATE TABLE generated_problems_new (
+    id TEXT PRIMARY KEY,
+    project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+    field TEXT NOT NULL,
+    problem_type TEXT NOT NULL,
+    domains TEXT,
+    user_suggestion TEXT,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    investigation TEXT NOT NULL,
+    core_concepts TEXT,
+    materials TEXT,
+    feasibility TEXT NOT NULL,
+    recommended TEXT NOT NULL,
+    safety_level TEXT,
+    complexity_score INTEGER,
+    engagement_score INTEGER,
+    overall_quality REAL,
+    metadata TEXT DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    workshop_type TEXT NOT NULL
+);
+
+INSERT INTO generated_problems_new SELECT * FROM generated_problems;
+DROP TABLE generated_problems;
+ALTER TABLE generated_problems_new RENAME TO generated_problems;
+
+CREATE INDEX IF NOT EXISTS idx_generated_problems_field_type
+    ON generated_problems(field, problem_type);
+CREATE INDEX IF NOT EXISTS idx_generated_problems_project
+    ON generated_problems(project_id);
+CREATE INDEX IF NOT EXISTS idx_generated_problems_workshop_type
+    ON generated_problems(workshop_type);
+
+-- Rebuild workshop_sessions with CHECK constraint on status
+CREATE TABLE workshop_sessions_new (
+    session_id TEXT PRIMARY KEY,
+    project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    workshop_type TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('active', 'completed', 'abandoned')),
+    current_stage TEXT,
+    title TEXT,
+    language TEXT NOT NULL DEFAULT 'en',
+    metadata TEXT DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_active_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+INSERT INTO workshop_sessions_new SELECT * FROM workshop_sessions;
+DROP TABLE workshop_sessions;
+ALTER TABLE workshop_sessions_new RENAME TO workshop_sessions;
+
+CREATE INDEX IF NOT EXISTS idx_workshop_sessions_project
+    ON workshop_sessions(project_id, workshop_type);
+CREATE INDEX IF NOT EXISTS idx_workshop_sessions_status
+    ON workshop_sessions(project_id, status);
+"""
+
+# V31: Rebuild llm_usage — fix stale defaults (call_type and purpose both defaulted
+# to 'chat' but V20 renamed chat → office). Also cleans up the comma-appended
+# purpose column from the ALTER TABLE in V14.
+SCHEMA_V31 = """
+CREATE TABLE llm_usage_new (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    backend TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    model TEXT NOT NULL,
+    prompt_tokens INTEGER NOT NULL DEFAULT 0,
+    completion_tokens INTEGER NOT NULL DEFAULT 0,
+    total_tokens INTEGER GENERATED ALWAYS AS (prompt_tokens + completion_tokens) STORED,
+    session_id TEXT,
+    project_id TEXT,
+    call_type TEXT NOT NULL DEFAULT 'office',
+    elapsed_seconds REAL,
+    error INTEGER NOT NULL DEFAULT 0,
+    purpose TEXT NOT NULL DEFAULT 'office'
+);
+
+INSERT INTO llm_usage_new
+    (id, timestamp, backend, provider, model, prompt_tokens, completion_tokens,
+     session_id, project_id, call_type, elapsed_seconds, error, purpose)
+SELECT id, timestamp, backend, provider, model, prompt_tokens, completion_tokens,
+       session_id, project_id, call_type, elapsed_seconds, error, purpose
+FROM llm_usage;
+
+DROP TABLE llm_usage;
+ALTER TABLE llm_usage_new RENAME TO llm_usage;
+
+CREATE INDEX IF NOT EXISTS idx_llm_usage_timestamp ON llm_usage(timestamp);
+CREATE INDEX IF NOT EXISTS idx_llm_usage_backend_provider_model
+    ON llm_usage(backend, provider, model);
+CREATE INDEX IF NOT EXISTS idx_llm_usage_project ON llm_usage(project_id);
+CREATE INDEX IF NOT EXISTS idx_llm_usage_session ON llm_usage(session_id);
+"""
+
+# V32: Remove unnecessary DB defaults on status/enum columns. The application
+# always provides these values explicitly — a DB default just hides bugs where
+# the caller forgets to pass the value. NOT NULL without DEFAULT means a missing
+# value fails loudly instead of silently inserting wrong data.
+#
+# Rebuilt tables: projects, milestones, sessions, llm_usage, teaching_personas.
+# Also cleans up comma-appended ALTER columns in sessions and student_profile
+# (sessions: title_source, message_count; llm_usage: purpose).
+SCHEMA_V32 = """
+-- Rebuild projects: remove DEFAULT on status
+CREATE TABLE projects_new (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    research_question TEXT NOT NULL,
+    status TEXT NOT NULL,
+    start_date TEXT,
+    end_date TEXT,
+    metadata TEXT DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+INSERT INTO projects_new SELECT * FROM projects;
+DROP TABLE projects;
+ALTER TABLE projects_new RENAME TO projects;
+
+-- Rebuild milestones: remove DEFAULT on status
+CREATE TABLE milestones_new (
+    id TEXT PRIMARY KEY,
+    project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    description TEXT,
+    status TEXT NOT NULL,
+    start_date TEXT,
+    due_date TEXT,
+    completed_at TEXT,
+    display_order INTEGER NOT NULL DEFAULT 0,
+    metadata TEXT DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+INSERT INTO milestones_new SELECT * FROM milestones;
+DROP TABLE milestones;
+ALTER TABLE milestones_new RENAME TO milestones;
+CREATE INDEX IF NOT EXISTS idx_milestones_project ON milestones(project_id);
+
+-- Rebuild sessions: remove DEFAULT on is_active, clean up ALTER columns
+CREATE TABLE sessions_new (
+    session_id TEXT PRIMARY KEY,
+    project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    title TEXT,
+    persona_id TEXT REFERENCES teaching_personas(persona_id),
+    is_active INTEGER NOT NULL,
+    language TEXT NOT NULL DEFAULT 'en',
+    metadata TEXT DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_active_at TEXT NOT NULL DEFAULT (datetime('now')),
+    title_source TEXT NOT NULL DEFAULT 'auto',
+    message_count INTEGER NOT NULL DEFAULT 0
+);
+INSERT INTO sessions_new SELECT * FROM sessions;
+DROP TABLE sessions;
+ALTER TABLE sessions_new RENAME TO sessions;
+CREATE INDEX IF NOT EXISTS idx_sessions_project ON sessions(project_id);
+
+-- Rebuild llm_usage: remove DEFAULT on call_type and purpose
+CREATE TABLE llm_usage_new (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    backend TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    model TEXT NOT NULL,
+    prompt_tokens INTEGER NOT NULL DEFAULT 0,
+    completion_tokens INTEGER NOT NULL DEFAULT 0,
+    total_tokens INTEGER GENERATED ALWAYS AS (prompt_tokens + completion_tokens) STORED,
+    session_id TEXT,
+    project_id TEXT,
+    call_type TEXT NOT NULL,
+    elapsed_seconds REAL,
+    error INTEGER NOT NULL DEFAULT 0,
+    purpose TEXT NOT NULL
+);
+INSERT INTO llm_usage_new
+    (id, timestamp, backend, provider, model, prompt_tokens, completion_tokens,
+     session_id, project_id, call_type, elapsed_seconds, error, purpose)
+SELECT id, timestamp, backend, provider, model, prompt_tokens, completion_tokens,
+       session_id, project_id, call_type, elapsed_seconds, error, purpose
+FROM llm_usage;
+DROP TABLE llm_usage;
+ALTER TABLE llm_usage_new RENAME TO llm_usage;
+CREATE INDEX IF NOT EXISTS idx_llm_usage_timestamp ON llm_usage(timestamp);
+CREATE INDEX IF NOT EXISTS idx_llm_usage_backend_provider_model
+    ON llm_usage(backend, provider, model);
+CREATE INDEX IF NOT EXISTS idx_llm_usage_project ON llm_usage(project_id);
+CREATE INDEX IF NOT EXISTS idx_llm_usage_session ON llm_usage(session_id);
+
+-- Rebuild teaching_personas: remove DEFAULT on persona_type
+CREATE TABLE teaching_personas_new (
+    persona_id TEXT PRIMARY KEY,
+    full_name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    birth_year INTEGER,
+    death_year INTEGER,
+    brief_description TEXT,
+    biography TEXT,
+    notable_works TEXT,
+    key_achievements TEXT,
+    teaching_style_notes TEXT,
+    persona_type TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    display_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+INSERT INTO teaching_personas_new SELECT * FROM teaching_personas;
+DROP TABLE teaching_personas;
+ALTER TABLE teaching_personas_new RENAME TO teaching_personas;
+CREATE INDEX IF NOT EXISTS idx_personas_active ON teaching_personas(is_active);
+"""
+
 # Verify queries — each must succeed (no error) on a correctly-migrated database.
 # Used by the migration engine to confirm each migration landed correctly.
 # Patterns:
@@ -734,7 +956,61 @@ VERIFY: dict[int, list[str]] = {
     29: [
         "SELECT analysis FROM artifacts LIMIT 0",
     ],
+    30: [
+        # generated_problems rebuilt with corrected default
+        "SELECT id, project_id, field, problem_type, title, description,"
+        " investigation, feasibility, recommended, workshop_type"
+        " FROM generated_problems LIMIT 0",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_generated_problems_field_type'",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_generated_problems_project'",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_generated_problems_workshop_type'",
+        # workshop_sessions rebuilt with CHECK constraint
+        "SELECT session_id, project_id, workshop_type, status, current_stage"
+        " FROM workshop_sessions LIMIT 0",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_workshop_sessions_project'",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_workshop_sessions_status'",
+    ],
+    31: [
+        "SELECT id, timestamp, backend, provider, model, prompt_tokens,"
+        " completion_tokens, total_tokens, call_type, purpose"
+        " FROM llm_usage LIMIT 0",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_llm_usage_timestamp'",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_llm_usage_backend_provider_model'",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_llm_usage_project'",
+        "SELECT 1 FROM sqlite_master WHERE type='index'"
+        " AND name='idx_llm_usage_session'",
+    ],
+    32: [
+        # Projects rebuilt — no DEFAULT on status
+        "SELECT id, title, research_question, status FROM projects LIMIT 0",
+        # Milestones rebuilt
+        "SELECT id, project_id, title, status FROM milestones LIMIT 0",
+        "SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_milestones_project'",
+        # Sessions rebuilt — clean columns
+        "SELECT session_id, project_id, is_active, title_source, message_count"
+        " FROM sessions LIMIT 0",
+        "SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_sessions_project'",
+        # llm_usage rebuilt — no DEFAULT on call_type/purpose
+        "SELECT call_type, purpose FROM llm_usage LIMIT 0",
+        # teaching_personas rebuilt
+        "SELECT persona_id, persona_type FROM teaching_personas LIMIT 0",
+        "SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_personas_active'",
+    ],
 }
+
+# Migrations that rebuild parent tables (projects, sessions, teaching_personas).
+# These require PRAGMA foreign_keys=OFF which must be set outside a transaction.
+# The migration engine toggles FK checks before/after these migrations and runs
+# PRAGMA foreign_key_check afterwards to verify referential integrity.
+FK_OFF_MIGRATIONS: set[int] = {32}
 
 # Map of version → SQL to apply
 MIGRATIONS: dict[int, str] = {
@@ -767,4 +1043,7 @@ MIGRATIONS: dict[int, str] = {
     27: SCHEMA_V27,
     28: SCHEMA_V28,
     29: SCHEMA_V29,
+    30: SCHEMA_V30,
+    31: SCHEMA_V31,
+    32: SCHEMA_V32,
 }
