@@ -15,10 +15,12 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Callable
-from typing import Any
+from typing import Annotated, Any
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
+
+from research_mentor.prompt_limits import Target, length_hint
 
 
 def extract_hypothesis(state: dict[str, Any]) -> dict[str, Any] | None:
@@ -235,38 +237,44 @@ class PolishedQuestion(BaseModel):
     """Clean, student-facing version of a saved research question."""
 
     title: str = Field(
-        description="Short, specific research question title (max 120 chars). "
+        max_length=120,
+        description="Short, specific research question title. "
         "Written as a question when possible.",
     )
-    description: str = Field(
+    description: Annotated[str, Target(words=45)] = Field(
+        max_length=500,
         description="1-3 sentence summary of what this research question "
         "investigates and why it matters. Written in clear prose, not bullet "
         "points or labeled fragments.",
     )
-    investigation: str = Field(
+    investigation: Annotated[str, Target(words=45)] = Field(
+        max_length=500,
         description="1-3 sentence description of how this question could be "
         "investigated — methods, data sources, measurements. Written in "
         "clear prose.",
     )
     field: str = Field(
+        max_length=50,
         description="Scientific field this question belongs to. Use a concise, "
         "standard name (e.g. 'biology', 'ecology', 'physics', 'psychology').",
     )
 
 
-_POLISH_SYSTEM = """\
+_POLISH_SYSTEM = f"""\
 You are editing a research question card for a student's collection. \
 Rewrite the draft into clean, concise, student-facing prose.
 
 Rules:
-- Title: a clear research question, max 120 characters.
-- Description: 1-3 sentences. No labels like "Mechanism:" or "Gap:" or \
+- Title: a clear research question ({length_hint(PolishedQuestion, "title")}).
+- Description: 1-3 sentences ({length_hint(PolishedQuestion, "description")}). \
+No labels like "Mechanism:" or "Gap:" or \
 "Focus area:" or "Inspired by retracted paper:" — rewrite as flowing prose. \
 CRITICAL: Every specific fact, name, number, mechanism, and detail from the \
 draft MUST appear in your output. Do not summarize away specifics. If the \
 draft says "enzymatic reactions" or "temperatures above 40°C" or names a \
 specific paper, those details must be in your output.
-- Investigation: 1-3 sentences on methods, data, measurements. No bullet \
+- Investigation: 1-3 sentences ({length_hint(PolishedQuestion, "investigation")}) \
+on methods, data, measurements. No bullet \
 points or key-value labels like "Statistical method:" or "X measurement:".
 - Field: one concise standard field name.
 - Do NOT invent new facts, studies, author names, or claims.

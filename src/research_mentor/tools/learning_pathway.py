@@ -10,7 +10,7 @@ CRITICAL BOUNDARIES:
 - Triggered when student shows sustained interest + asks about future learning
 - NOT for immediate prerequisite gaps (use concept_explainer for that)
 
-Ported from progress_mentor's educational_pathway_advisor.py with adaptations:
+Design notes:
 - Uses structured_call() instead of get_structured_llm()
 - No silent fallbacks — let errors propagate
 - No LangChain StructuredTool wrapper — exports async function directly

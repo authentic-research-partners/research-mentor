@@ -140,7 +140,7 @@ async def search_europepmc(
                 try:
                     year = int(pub_year)
                 except (ValueError, TypeError):
-                    pass
+                    logger.debug(f"Unparseable pubYear: {pub_year!r}")
 
             results.append({
                 "title": title,

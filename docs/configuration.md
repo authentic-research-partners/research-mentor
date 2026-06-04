@@ -2,7 +2,7 @@
 
 Most settings can be configured through the **Settings page** in the web UI. Changes are saved to `~/.research-mentor/config.toml`.
 
-For manual configuration, edit `~/.research-mentor/config.toml`. You only need to include keys you want to change — everything else uses bundled defaults.
+For manual configuration, edit `~/.research-mentor/config.toml`. You only need to include keys you want to change - everything else uses bundled defaults.
 
 Environment variables override both: `RESEARCH_MENTOR_BACKEND=vllm`.
 
@@ -125,7 +125,7 @@ Semantic memory for cross-session context.
 
 ## `[safety]`
 
-Query safety review — checks search queries for personal data before sending to external APIs.
+Query safety review - checks search queries for personal data before sending to external APIs.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|

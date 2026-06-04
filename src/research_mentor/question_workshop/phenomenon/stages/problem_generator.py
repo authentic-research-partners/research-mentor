@@ -18,6 +18,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from loguru import logger
 
 from research_mentor.llm import get_chat_llm, structured_call
+from research_mentor.prompt_limits import length_limits_block
 from research_mentor.question_workshop.schemas import ProblemComponents
 
 PROBLEM_GENERATION_PROMPT = """You are an expert at creating IYPT-style open-ended experimental problems.
@@ -366,24 +367,27 @@ the edge.
 Make the title memorable and emphasize the elegance of the derivation!
 """
 
-EXTRACTION_PROMPT = """Extract structured problem components from the IYPT-style problem formulation.
+# Length guidance derived from ProblemComponents' caps (single source of truth).
+_PROBLEM_LIMITS = length_limits_block(
+    ProblemComponents, "title", "description", "investigation"
+)
+
+EXTRACTION_PROMPT = f"""Extract structured problem components from the IYPT-style problem formulation.
 
 Return:
-- title: 2-4 words, catchy problem title (max 50 characters)
-- description: 2-4 sentences describing setup and phenomenon (max 500 characters - BE CONCISE)
-- investigation: Investigation directive starting with "Investigate...", "Study...", "Explore...", or "Examine..." (max 300 characters - BE CONCISE)
+- title: 2-4 words, catchy problem title
+- description: 2-4 sentences describing setup and phenomenon (BE CONCISE)
+- investigation: Investigation directive starting with "Investigate...", "Study...", "Explore...", or "Examine..." (BE CONCISE)
 - core_concepts: 2-6 core scientific concepts involved (physics/chemistry/biology)
 
-CRITICAL CHARACTER LIMITS - responses will fail validation if exceeded:
-- title: max 50 characters
-- description: max 500 characters (2-3 SHORT sentences, ~80-100 words)
-- investigation: max 300 characters (1-2 SHORT sentences, ~40-50 words)
+LENGTH LIMITS - keep within these (longer output is trimmed to fit):
+{_PROBLEM_LIMITS}
 
 Validation:
 - Title must be 2-4 words (not a full sentence)
 - Investigation must start with action verb
 - Description must be clear and engaging
-- ALL fields must respect character limits above
+- ALL fields must respect the length limits above
 """
 
 

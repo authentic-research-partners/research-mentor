@@ -1,11 +1,19 @@
 # Changelog
 
+## v1.0.5 (2026-06-03)
+
+- Fix vLLM throughput collapse during question generation under concurrency on the local vLLM backend (no effect on the default Claude CLI backend)
+- Fix a crash that prevented generated questions from saving in the Formulating Research Question (phenomenon) workshop
+- Questioned-Science workshop: show a clear error when no valid retraction cases can be curated, instead of presenting a fabricated placeholder case
+- Robustness (fail-fast): removed silent fallbacks that could mask failures (empty curation, config loading, optional-import guards) and now log previously-swallowed exceptions, so errors surface instead of degrading quietly
+- Update dependencies
+
 ## v1.0.4 (2026-04-10)
 
-- Improve server responsiveness during local vision processing and file I/O — sync CPU-bound work now runs in `asyncio.to_thread`
-- Improve PDF image extraction resilience — corrupt pages no longer crash artifact upload
+- Improve server responsiveness during local vision processing and file I/O - sync CPU-bound work now runs in `asyncio.to_thread`
+- Improve PDF image extraction resilience - corrupt pages no longer crash artifact upload
 - Skip tiny embedded images during PDF extraction (decorative icons, logos) via `vision.min_image_pixels` and `vision.min_image_bytes` thresholds
-- Improve sqlite-vec KNN query accuracy — use `rowid IN (...)` pre-filtering instead of post-scan filtering
+- Improve sqlite-vec KNN query accuracy - use `rowid IN (...)` pre-filtering instead of post-scan filtering
 - Improve DB schema: remove stale defaults, add CHECK constraints on enum columns (migrations V30-V32)
 - Process multiple embedded PDF images concurrently via `asyncio.gather`
 - Use LANCZOS filter for high-quality image downscaling before vision inference
@@ -15,7 +23,7 @@
 
 ### Artifacts
 - Typed uploads (7 types) with description, per-type validation and vision prompts
-- Replace Docling with pdfplumber/python-docx/pypdfium2 — lighter dependencies
+- Replace Docling with pdfplumber/python-docx/pypdfium2 - lighter dependencies
 - Section-aware chunking for GROBID PDFs, inline description editing
 - Pandas data analysis for CSV/TSV (describe, correlations, value counts)
 - Statistical analysis: LLM-selected scipy/statsmodels tests (11 types), tier selection, retry with error feedback
@@ -27,7 +35,7 @@
 
 ## v1.0.2 (2026-04-06)
 
-- Embedding model downloads in the background — server starts immediately
+- Embedding model downloads in the background - server starts immediately
 - Vision off by default; enable in Settings with backend choice (auto/Claude CLI/local/API)
 - Local vision model (~4 GB, ~10 GB RAM) managed from Settings: download, remove, size and path info
 - Improve local vision model compatibility (processor expected PIL Image, not file path)

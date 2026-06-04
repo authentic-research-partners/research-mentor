@@ -286,7 +286,7 @@ async def generate_modeling_questions(
             by_approach[app].append(r)
 
     best_per_approach: list[dict[str, Any]] = []
-    for app, candidates_list in by_approach.items():
+    for _app, candidates_list in by_approach.items():
         best = max(candidates_list, key=lambda c: float(c["overall_quality"]))
         best_per_approach.append(best)
 

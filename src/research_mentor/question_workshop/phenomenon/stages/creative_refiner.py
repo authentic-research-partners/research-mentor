@@ -20,6 +20,7 @@ from loguru import logger
 from pydantic import ValidationError
 
 from research_mentor.llm import get_chat_llm, structured_call
+from research_mentor.prompt_limits import length_hint, length_limits_block
 from research_mentor.question_workshop.schemas import RefinedProblem
 
 CREATIVE_REFINEMENT_PROMPT = """You are an expert at making IYPT-style open-ended experimental problems engaging and memorable.
@@ -452,7 +453,12 @@ Given a theoretical problem, refine it to maximize engagement.
 List specific refinements made (for transparency and learning).
 """
 
-EXTRACTION_PROMPT = """Extract structured refinement from the creative enhancement.
+# Length guidance derived from RefinedProblem's caps (single source of truth).
+_REFINE_LIMITS = length_limits_block(
+    RefinedProblem, "title", "description", "investigation"
+)
+
+EXTRACTION_PROMPT = f"""Extract structured refinement from the creative enhancement.
 
 Return:
 - title: 2-4 words, enhanced for catchiness
@@ -461,16 +467,12 @@ Return:
 - engagement_score: 1-10 (how exciting/intriguing is this problem?)
 - changes_made: List of specific refinements
 
-🚨 CRITICAL CHARACTER LIMITS (HARD CONSTRAINTS):
-- title: MAXIMUM 50 characters (min: 3)
-- description: MAXIMUM 500 characters (min: 50)
-- investigation: MAXIMUM 300 characters (min: 30)
-
-These are STRICT limits enforced by validation. Exceeding them will cause failure.
+LENGTH LIMITS - keep within these (longer output is trimmed to fit):
+{_REFINE_LIMITS}
 
 Guidelines for staying within limits:
-- investigation (300 char max): Focus on 2-3 key parameters, use concise phrasing
-  ✅ Good (178 chars): "Investigate how the maze geometry, surface temperature, and droplet size affect the droplet's velocity, stability, and success rate in navigating the vapor-supported path."
+- investigation ({length_hint(RefinedProblem, "investigation")}): Focus on 2-3 key parameters, use concise phrasing
+  ✅ Good: "Investigate how the maze geometry, surface temperature, and droplet size affect the droplet's velocity, stability, and success rate in navigating the vapor-supported path."
   ❌ Too long: Avoid excessive detail, multiple clauses, or verbose explanations
 
 Validation:
@@ -478,7 +480,7 @@ Validation:
 - Description must use sensory/action language
 - Investigation must name specific parameters
 - Engagement score must be realistic (consider wow factor)
-- ALL fields must stay within character limits above
+- ALL fields must stay within the length limits above
 """
 
 

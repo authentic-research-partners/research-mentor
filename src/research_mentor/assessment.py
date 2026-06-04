@@ -195,7 +195,7 @@ def _format_context_for_prompt(ctx: dict[str, Any]) -> str:
                     if due_date < date.today():
                         overdue_count += 1
                 except ValueError:
-                    pass
+                    logger.debug(f"Skipping unparseable due date: {due!r}")
         if overdue_count:
             parts.append(f"  ({overdue_count} overdue)")
     else:

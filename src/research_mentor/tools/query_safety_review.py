@@ -70,7 +70,7 @@ def _record_block(
         loop = asyncio.get_running_loop()
         loop.create_task(_persist_block(entry))
     except RuntimeError:
-        pass  # no event loop — skip DB persistence (e.g. in sync tests)
+        logger.debug("No running event loop — skipping safety-block DB persist")
 
 
 async def _persist_block(entry: BlockedQuery) -> None:

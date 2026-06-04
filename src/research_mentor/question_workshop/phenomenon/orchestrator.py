@@ -175,6 +175,7 @@ async def generate_research_question(
     record = {
         "id": uuid.uuid4().hex,
         "project_id": project_id,
+        "workshop_type": "phenomenon",
         "field": field,
         "problem_type": problem_type,
         "domains": json.dumps(exploration.get("domains", [])),

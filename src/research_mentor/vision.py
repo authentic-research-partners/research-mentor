@@ -43,7 +43,7 @@ def _model_cache_dir() -> Path | None:
             if repo.repo_id == model_name:
                 return Path(repo.repo_path)
     except Exception:
-        pass
+        logger.debug("Failed to locate model in HF cache")
     return None
 
 

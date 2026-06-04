@@ -78,7 +78,7 @@ async def get_migration_status(db_path: Path) -> MigrationStatus:
             if row and row[0] is not None:
                 current_version = row[0]
         except aiosqlite.OperationalError:
-            pass
+            logger.debug("schema_version table absent — treating as version 0 (fresh DB)")
     return MigrationStatus(
         current_version=current_version,
         target_version=SCHEMA_VERSION,

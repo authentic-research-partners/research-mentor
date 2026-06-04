@@ -154,26 +154,14 @@ async def curator(
         ))
 
     if not cases:
-        # Fallback: use first paper if curation produced no valid cases
-        paper = enriched_papers[0]
-        cases.append(CuratedCase(
-            title=paper.title,
-            authors=paper.authors,
-            journal=paper.journal,
-            year=paper.year,
-            doi=paper.doi,
-            scrutiny_type=paper.scrutiny_type,
-            reason=paper.reason,
-            citation_count=paper.citation_count,
-            what_it_claimed=paper.what_it_claimed,
-            why_flagged=paper.why_flagged,
-            resolution_status=paper.resolution_status,
-            pedagogical_lesson="This case shows that published research is not always correct.",
-            discussion_questions=[
-                "What methodology issues might have led to this problem?",
-                "How could peer reviewers have caught this earlier?",
-            ],
-        ))
+        # Fail loud: a fabricated case from the first paper would present invented
+        # pedagogical content as if curated (fail-fast principle: no graceful
+        # degradation that hides issues). An empty curation is a real failure to surface.
+        raise RuntimeError(
+            f"Curation produced no valid cases for field {field!r} from "
+            f"{len(enriched_papers)} enriched paper(s) "
+            f"(selected_indices={curation.selected_indices})."
+        )
 
     result = QuestionedResult(
         cases=cases,

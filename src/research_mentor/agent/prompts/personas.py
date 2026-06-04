@@ -1,7 +1,4 @@
-"""Persona adaptation instructions for guide nodes.
-
-Ported from hosted progress_mentor_langgraph/nodes/guides/_persona_instructions.py.
-"""
+"""Persona adaptation instructions for guide nodes."""
 
 from __future__ import annotations
 

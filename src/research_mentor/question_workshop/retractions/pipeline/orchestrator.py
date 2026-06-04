@@ -158,7 +158,7 @@ async def generate_retraction_questions(
             overall_score=sq.feasibility.overall_score / 10.0,
             data=qd,
         )
-        for sq, qd in zip(scored.questions, all_questions_data)
+        for sq, qd in zip(scored.questions, all_questions_data, strict=False)
     ]
     questions_data = select_questions(
         scored_candidates,

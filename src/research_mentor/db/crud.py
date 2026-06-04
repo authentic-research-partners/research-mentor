@@ -1506,7 +1506,7 @@ async def compute_engagement_metrics(project_id: str) -> dict[str, Any]:
                 last_dt = datetime.fromisoformat(last_active)
                 days_since_last_activity = (datetime.now() - last_dt).days
             except ValueError:
-                pass
+                logger.debug(f"Unparseable last_active timestamp: {last_active!r}")
 
     return {
         "session_count": session_count,

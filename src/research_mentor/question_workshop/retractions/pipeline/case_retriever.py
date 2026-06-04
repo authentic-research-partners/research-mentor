@@ -81,13 +81,13 @@ def _extract_year(date_str: str | None) -> int | None:
         try:
             return int(parts[0])
         except ValueError:
-            pass
+            logger.debug(f"Could not parse year from {date_str!r} (dash format)")
     parts = date_str.strip().split("/")
     if parts and len(parts[-1]) == 4:
         try:
             return int(parts[-1])
         except ValueError:
-            pass
+            logger.debug(f"Could not parse year from {date_str!r} (slash format)")
     return None
 
 

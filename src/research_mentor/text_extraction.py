@@ -188,7 +188,7 @@ def extract_images(
         try:
             doc.close()
         except Exception:
-            pass
+            logger.debug("Error closing document handle during cleanup")
 
     # If nothing was extracted, clean up the empty temp dir so we don't leak it.
     # The caller's cleanup logic only runs when image_paths is non-empty.

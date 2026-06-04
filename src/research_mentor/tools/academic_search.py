@@ -117,12 +117,7 @@ def _search_arxiv_sync(
     query: str, max_results: int, category: str | None, client: Any,
 ) -> list[dict[str, Any]]:
     """Synchronous arXiv search (runs in thread pool)."""
-    try:
-        import arxiv
-    except ImportError:
-        msg = "arxiv package not installed. Run: pip install arxiv"
-        return [{"error": msg, "source": "arXiv",
-                 "tool_status": ToolStatus.error("arXiv", "unavailable", msg)}]
+    import arxiv
 
     try:
         search_query = f"{query} AND cat:{category}" if category else query

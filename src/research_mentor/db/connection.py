@@ -187,7 +187,7 @@ async def get_schema_version(db_path: Path | None = None) -> tuple[int, int]:
             if row and row[0] is not None:
                 current_version = row[0]
         except aiosqlite.OperationalError:
-            pass  # Table doesn't exist yet — version 0
+            logger.debug("schema_version table absent — treating as version 0 (fresh DB)")
     return current_version, SCHEMA_VERSION
 
 

@@ -90,6 +90,7 @@ async def _attach_session_messages(proj_data: dict[str, Any]) -> None:
 
     import aiosqlite
 
+    # LangGraph checkpoints DB — separate file from the app DB; get_db() doesn't manage it.
     async with aiosqlite.connect(str(checkpoints_file)) as db:
         db.row_factory = aiosqlite.Row
         for session in proj_data["sessions"]:
@@ -385,6 +386,7 @@ async def import_data(file: UploadFile) -> ImportResponse:
         if s.get("messages")
     ]
     if sessions_with_messages:
+        # LangGraph checkpoints DB — separate file from the app DB; get_db() doesn't manage it.
         async with aiosqlite.connect(str(checkpoints_file)) as cp_db:
             await cp_db.execute(
                 """CREATE TABLE IF NOT EXISTS checkpoints (

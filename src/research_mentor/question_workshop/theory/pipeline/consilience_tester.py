@@ -134,7 +134,7 @@ async def test_consilience(
 
     # Step 3: Test consilience in each domain (parallel)
     test_tasks = []
-    for i, (test_domain, papers_result) in enumerate(zip(domains, search_results)):
+    for _i, (test_domain, papers_result) in enumerate(zip(domains, search_results, strict=False)):
         if isinstance(papers_result, BaseException):
             logger.warning("Stage 4: Search failed for '{}': {}", test_domain, papers_result)
             papers_result = []

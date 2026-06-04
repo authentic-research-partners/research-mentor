@@ -208,7 +208,7 @@ def dev(ctx: click.Context, port: int | None, host: str | None, ui_port: int) ->
                 [backend_task, vite_task], return_when=asyncio.FIRST_COMPLETED,
             )
         except asyncio.CancelledError:
-            pass
+            logger.debug("Dev server tasks cancelled (shutdown)")
         finally:
             click.echo("\n  Shutting down...")
             server.should_exit = True
@@ -219,7 +219,7 @@ def dev(ctx: click.Context, port: int | None, host: str | None, ui_port: int) ->
     try:
         asyncio.run(_run_dev())
     except KeyboardInterrupt:
-        pass
+        logger.debug("Dev server interrupted (Ctrl+C)")
 
 
 @main.command()
@@ -234,7 +234,7 @@ def init() -> None:
     except SchemaMismatchError as e:
         click.echo(f"Database exists but needs migration (v{e.current} → v{e.target}).")
         click.echo("Run 'research-mentor migrate' to update your database.")
-        raise SystemExit(1)
+        raise SystemExit(1) from None
     click.echo(f"Database initialized at {db_path}")
 
 
@@ -1296,6 +1296,7 @@ async def _export_session_messages(proj_data: dict[str, Any]) -> None:
 
     import aiosqlite
 
+    # LangGraph checkpoints DB — separate file from the app DB; get_db() doesn't manage it.
     async with aiosqlite.connect(str(checkpoints_file)) as db:
         db.row_factory = aiosqlite.Row
         for session in proj_data["sessions"]:
@@ -1345,7 +1346,7 @@ def _save_last_port(service: str, port: int) -> None:
         _LAST_PORTS_FILE.parent.mkdir(parents=True, exist_ok=True)
         _LAST_PORTS_FILE.write_text(json.dumps(ports, indent=2) + "\n")
     except OSError:
-        pass  # non-critical
+        logger.debug(f"Could not persist last-ports file {_LAST_PORTS_FILE}")
 
 
 def _port_available(host: str, port: int) -> bool:
@@ -1399,7 +1400,7 @@ def _find_available_port(
                 raise click.ClickException(
                     f"Port {preferred} is already in use. "
                     f"Free it or choose a different port with --port."
-                )
+                ) from None
     raise click.ClickException(
         f"No available port found in range {preferred}–{preferred + max_attempts - 1}."
     )
@@ -1542,7 +1543,7 @@ def _print_shutdown_notice(config: object) -> None:
 
     click.echo()
     click.echo("  Note: these containers are still running:")
-    for label, name, stop_cmd in running:
+    for label, name, _stop_cmd in running:
         click.echo(f"    {label} ({name})")
     click.echo()
     if len(running) == 1:

@@ -26,13 +26,12 @@ async def _require_project(project_id: str) -> None:
 @project_router.post("", response_model=MemoryResponse, status_code=201)
 async def create_memory(project_id: str, body: MemoryCreate) -> MemoryResponse:
     await _require_project(project_id)
-    # Try to auto-embed
-    embedding: bytes | None = None
-    try:
-        from research_mentor.embeddings import embed_text
-        embedding = await embed_text(body.memory_text)
-    except ImportError:
-        pass
+    # Auto-embed for semantic recall. embeddings (sentence-transformers) is a hard
+    # dependency, so a failed import is a packaging bug — let it surface rather than
+    # silently storing a memory with no vector.
+    from research_mentor.embeddings import embed_text
+
+    embedding = await embed_text(body.memory_text)
     memory_id = await crud.store_memory(
         project_id=project_id,
         memory_text=body.memory_text,
@@ -81,10 +80,8 @@ async def search_memories(
     project_id: str, body: MemorySearchRequest,
 ) -> list[MemorySearchResponse]:
     await _require_project(project_id)
-    try:
-        from research_mentor.embeddings import embed_text
-    except ImportError:
-        raise HTTPException(501, "Embeddings not available (sentence-transformers not installed)")
+    from research_mentor.embeddings import embed_text
+
     query_embedding = await embed_text(body.query)
     results = await crud.search_similar_memories(
         project_id, query_embedding, threshold=body.threshold, limit=body.limit,

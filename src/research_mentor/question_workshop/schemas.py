@@ -6,7 +6,11 @@ API request/response models are also defined here.
 
 from __future__ import annotations
 
+from typing import Annotated
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from research_mentor.prompt_limits import Target
 
 # ---------------------------------------------------------------------------
 # Stage 1: Domain Exploration
@@ -70,17 +74,17 @@ class ExplorationData(BaseModel):
 class ProblemComponents(BaseModel):
     """Structured output for problem generation stage (IYPT-style format)."""
 
-    title: str = Field(
+    title: Annotated[str, Target(words=4)] = Field(
         max_length=100,
         description="Problem title (2-4 words, catchy and memorable).",
     )
 
-    description: str = Field(
+    description: Annotated[str, Target(words=80)] = Field(
         max_length=800,
         description="Problem description (2-4 sentences). Setup + phenomenon + surprise.",
     )
 
-    investigation: str = Field(
+    investigation: Annotated[str, Target(words=45)] = Field(
         max_length=500,
         description=(
             "Investigation directive (1-2 sentences). "
@@ -197,15 +201,15 @@ class FeasibilityScores(BaseModel):
 class RefinedProblem(BaseModel):
     """Structured output for creative refinement stage."""
 
-    title: str = Field(
+    title: Annotated[str, Target(words=4)] = Field(
         max_length=100,
         description="Refined title (2-4 words, enhanced for catchiness).",
     )
-    description: str = Field(
+    description: Annotated[str, Target(words=80)] = Field(
         max_length=800,
         description="Refined description (2-4 sentences, enhanced for vividness).",
     )
-    investigation: str = Field(
+    investigation: Annotated[str, Target(words=45)] = Field(
         max_length=500,
         description="Refined investigation (1-2 sentences, enhanced for clarity).",
     )

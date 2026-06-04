@@ -200,7 +200,7 @@ async def generate_theory_questions(
             overall_score=q.feasibility.overall_score / 10.0,
             data=qd,
         )
-        for q, qd in zip(scored, all_question_dicts)
+        for q, qd in zip(scored, all_question_dicts, strict=False)
     ]
     selected = select_questions(
         scored_candidates,

@@ -169,14 +169,14 @@ def _parse_yaml_tool_calls(content: str) -> list[dict[str, Any]]:
             if calls:
                 return calls
         except yaml.YAMLError:
-            pass
+            logger.debug("Fenced YAML tool-call block did not parse")
 
     # Try bare YAML
     try:
         data = yaml.safe_load(content.strip())
         return _extract(data)
     except yaml.YAMLError:
-        pass
+        logger.debug("Bare YAML tool-call parse failed")
 
     return []
 

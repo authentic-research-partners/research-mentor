@@ -435,7 +435,7 @@ def _run_test(analysis: Analysis, df: pd.DataFrame) -> AnalysisResult:
                 var_explained = pca.eigenvals / pca.eigenvals.sum()
                 cum_var = np.cumsum(var_explained)
                 lines = [f"PCA on {len(analysis.columns)} columns ({len(valid)} observations):"]
-                for i, (v, c) in enumerate(zip(var_explained, cum_var)):
+                for i, (v, c) in enumerate(zip(var_explained, cum_var, strict=False)):
                     lines.append(
                         f"  PC{i + 1}: {v:.1%} variance (cumulative: {c:.1%})"
                     )

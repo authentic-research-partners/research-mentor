@@ -1,6 +1,5 @@
 """Pydantic schemas for the Claim Investigator pipeline.
 
-Consolidated from progress_mentor's claim.py, evidence.py, and project.py.
 All schemas use Pydantic v2 conventions (model_config instead of class Config).
 """
 

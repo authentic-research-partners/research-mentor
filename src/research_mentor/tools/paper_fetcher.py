@@ -683,7 +683,7 @@ async def enrich_papers_with_intros(
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     enriched_count = 0
-    for (idx, _), result in zip(candidates, results):
+    for (idx, _), result in zip(candidates, results, strict=False):
         if isinstance(result, BaseException):
             logger.debug("Intro fetch exception for paper {}: {}", idx, result)
             continue

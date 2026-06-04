@@ -81,7 +81,7 @@ def _load_claude_cli_config() -> tuple[int, int]:
             _DEFAULT_MAX_REQUESTS_PER_MINUTE,
         )
         return int(max_parallel), int(max_rpm)
-    except (FileNotFoundError, RuntimeError, ImportError):
+    except (FileNotFoundError, RuntimeError):
         return _DEFAULT_MAX_PARALLEL_PROCESSES, _DEFAULT_MAX_REQUESTS_PER_MINUTE
 
 
@@ -286,7 +286,7 @@ class ClaudeCLI:
             except FileNotFoundError:
                 raise ClaudeCLINotFoundError(
                     "Claude CLI not found. Install: npm install -g @anthropic-ai/claude-code"
-                )
+                ) from None
 
             try:
                 stdout_bytes, stderr_bytes = await asyncio.wait_for(
@@ -303,7 +303,7 @@ class ClaudeCLI:
                 )
                 proc.kill()
                 await proc.wait()
-                raise ClaudeCLITimeoutError(timeout)
+                raise ClaudeCLITimeoutError(timeout) from None
 
         elapsed = time.monotonic() - t0
         stdout = stdout_bytes.decode() if stdout_bytes else ""

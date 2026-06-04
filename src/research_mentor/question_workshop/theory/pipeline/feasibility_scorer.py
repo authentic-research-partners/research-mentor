@@ -78,7 +78,7 @@ async def score_feasibility(
 
     # Pair questions with scores, skip failures
     scored: list[ScoredTheoryQuestion] = []
-    for question, result in zip(candidates.questions, results):
+    for question, result in zip(candidates.questions, results, strict=False):
         if isinstance(result, BaseException):
             logger.warning("Stage 6: Scoring failed for '{}': {}", question.question[:60], result)
             continue

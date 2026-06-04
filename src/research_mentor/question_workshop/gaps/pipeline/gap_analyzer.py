@@ -98,7 +98,7 @@ async def analyze_gaps(
 
     # Collect successful results
     strategies: list[StrategyFindings] = []
-    for mode, result in zip(modes, results):
+    for mode, result in zip(modes, results, strict=False):
         if isinstance(result, BaseException):
             logger.warning("Strategy {} failed: {}", mode, result)
             continue

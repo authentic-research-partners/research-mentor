@@ -109,23 +109,23 @@ or nature of the software, under any kind of legal claim.***
 
 ## Definitions
 
-The **licensor** is the entity offering these terms, and the
-**software** is the software the licensor makes available under
-these terms, including any portion of it.
+The **licensor** is the individual or entity offering these
+terms, and the **software** is the software the licensor makes
+available under these terms.
 
-**you** refers to the individual or entity agreeing to these
+**You** refers to the individual or entity agreeing to these
 terms.
 
-**your company** is any legal entity, sole proprietorship,
+**Your company** is any legal entity, sole proprietorship,
 or other kind of organization that you work for, plus all
 organizations that have control over, are under the control of,
-or are under common control with that organization. **control**
+or are under common control with that organization. **Control**
 means ownership of substantially all the assets of an entity,
 or the power to direct its management and policies by vote,
 contract, or otherwise. Control can be direct or indirect.
 
-**your licenses** are all the licenses granted to you for the
+**Your licenses** are all the licenses granted to you for the
 software under these terms.
 
-**use** means anything you do with the software requiring one
+**Use** means anything you do with the software requiring one
 of your licenses.

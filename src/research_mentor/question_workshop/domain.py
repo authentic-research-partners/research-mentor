@@ -11,13 +11,6 @@ from functools import lru_cache
 
 from research_mentor.config import load_config
 
-# Fallback refused list if config is unavailable (e.g., during build)
-_DEFAULT_REFUSED: list[str] = [
-    "medicine", "clinical_research", "pharmacology", "nutrition_science",
-    "public_health_policy", "veterinary_medicine", "forensic_science",
-    "psychiatry", "clinical_psychology", "epidemiology",
-]
-
 
 def _load_fields_config() -> dict[str, list[str]]:
     """Load the [question_workshop.fields] config section."""
@@ -26,26 +19,18 @@ def _load_fields_config() -> dict[str, list[str]]:
 
 
 def get_refused_fields() -> list[str]:
-    """Return the configured refused field list."""
-    return _load_fields_config().get("refused", _DEFAULT_REFUSED)
+    """Return the configured refused field list (config.toml is the source of truth)."""
+    return _load_fields_config()["refused"]
 
 
 def get_natural_science_fields() -> list[str]:
     """Return the configured natural science field list."""
-    return _load_fields_config().get(
-        "natural_science",
-        ["physics", "chemistry", "biology", "earth_science", "astronomy",
-         "materials_science", "environmental_science"],
-    )
+    return _load_fields_config()["natural_science"]
 
 
 def get_social_science_fields() -> list[str]:
     """Return the configured social science field list."""
-    return _load_fields_config().get(
-        "social_science",
-        ["psychology", "sociology", "economics", "education",
-         "political_science", "linguistics", "anthropology", "human_geography"],
-    )
+    return _load_fields_config()["social_science"]
 
 
 def get_allowed_categories(workshop: str) -> list[str]:

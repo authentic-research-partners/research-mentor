@@ -101,7 +101,7 @@ def parse_retry_after(header: str | None) -> float | None:
         value = float(header)
         return max(value, 0.0)
     except ValueError:
-        pass
+        logger.debug(f"Retry-After not a float: {header!r} — trying HTTP-date")
     # Try HTTP-date format (RFC 7231 §7.1.1.1)
     from email.utils import parsedate_to_datetime
     try:

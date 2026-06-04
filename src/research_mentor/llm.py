@@ -16,7 +16,7 @@ import re
 import time
 from collections.abc import AsyncIterator
 from contextvars import ContextVar
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import (
@@ -31,6 +31,10 @@ from loguru import logger
 from pydantic import BaseModel, ValidationError
 
 from research_mentor.config import load_config
+from research_mentor.vllm_schema import strip_vllm_banned_keys, truncate_to_model
+
+if TYPE_CHECKING:
+    from openai import AsyncOpenAI
 
 # --- Token tracking (accumulated across a graph invocation) ---
 
@@ -149,6 +153,35 @@ def get_chat_llm(**overrides: Any) -> BaseChatModel:
     )
 
 
+async def get_vision_client() -> AsyncOpenAI:
+    """Construct the AsyncOpenAI client for the vision backend.
+
+    Vision uses a distinct OpenAI-compatible endpoint — its own base_url, key
+    file, and timeout in VisionConfig — separate from the text-LLM backends
+    served by get_chat_llm(). Centralized here so OpenAI client construction
+    stays in the factory instead of scattered across call sites.
+    """
+    from pathlib import Path
+
+    from openai import AsyncOpenAI
+
+    vcfg = load_config().vision
+    key_path = Path(vcfg.api_key_file).expanduser()
+    if not key_path.exists():
+        raise FileNotFoundError(
+            f"Vision API key file not found: {key_path}. "
+            "Create it with: echo 'sk-...' > ~/.research-mentor/vision_api_key"
+        )
+    api_key = (await asyncio.to_thread(key_path.read_text)).strip()
+    if not api_key:
+        raise ValueError(f"Vision API key file is empty: {key_path}")
+    return AsyncOpenAI(
+        base_url=vcfg.api_base_url,
+        api_key=api_key,
+        timeout=vcfg.api_timeout,
+    )
+
+
 def get_structured_llm(**overrides: Any) -> BaseChatModel:
     """Alias for compatibility. Use structured_call() for JSON output."""
     return get_chat_llm(**overrides)
@@ -188,6 +221,10 @@ async def structured_call[T: BaseModel](
     config = load_config()
     backend = overrides.pop("backend", config.backend)
     json_schema = schema.model_json_schema()
+    # Wire schema strips maxLength/maxItems/etc — those trigger xgrammar's slow
+    # path and collapse throughput. Caps still enforced via truncate_to_model +
+    # post-decode validation. See research_mentor.vllm_schema.
+    wire_schema = strip_vllm_banned_keys(json_schema)
 
     # Build JSON instruction with example (not raw schema — models copy schema structure)
     example = _schema_to_example(json_schema)
@@ -245,7 +282,7 @@ async def structured_call[T: BaseModel](
                 "type": "json_schema",
                 "json_schema": {
                     "name": schema.__name__,
-                    "schema": json_schema,
+                    "schema": wire_schema,
                     "strict": True,
                 },
             },
@@ -271,7 +308,9 @@ async def structured_call[T: BaseModel](
         last_exc: ValidationError | None = None
         for attempt in range(max_retries + 1):
             try:
-                return schema.model_validate(data)
+                # Clip to declared bounds first — the wire schema is unbounded,
+                # so the model may over-run a maxLength/maxItems cap.
+                return schema.model_validate(truncate_to_model(schema, data))
             except ValidationError as exc:
                 last_exc = exc
                 if attempt >= max_retries:
@@ -297,7 +336,7 @@ async def structured_call[T: BaseModel](
                         "type": "json_schema",
                         "json_schema": {
                             "name": schema.__name__,
-                            "schema": json_schema,
+                            "schema": wire_schema,
                             "strict": True,
                         },
                     },
@@ -405,7 +444,7 @@ async def structured_call[T: BaseModel](
                 raise RuntimeError(
                     f"structured_call for {schema.__name__} produced no JSON on retry — "
                     f"raw output: {raw_retry[:200]}"
-                )
+                ) from None
 
             try:
                 data = json.loads(cleaned)
@@ -811,8 +850,7 @@ def _record_usage(
         loop = asyncio.get_running_loop()
         loop.create_task(_persist())
     except RuntimeError:
-        # No event loop (e.g. during sync tests) — skip
-        pass
+        logger.debug("No running event loop — skipping background persist task")
 
 
 # --- Helpers ---

@@ -9,7 +9,7 @@ CRITICAL BOUNDARIES:
 - ALWAYS provides context-bound explanations (ties to student's project)
 - ALWAYS includes verification questions (checks understanding)
 
-Ported from progress_mentor with adaptations:
+Design notes:
 - Uses structured_call() instead of get_structured_llm()
 - No silent fallbacks — let errors propagate
 - No LangChain StructuredTool wrapper — exports async function directly
@@ -17,11 +17,13 @@ Ported from progress_mentor with adaptations:
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Annotated, Any
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from loguru import logger
 from pydantic import BaseModel, Field, field_validator
+
+from research_mentor.prompt_limits import Target, length_hint
 
 
 class PrerequisiteClassification(BaseModel):
@@ -49,8 +51,8 @@ class PrerequisiteClassification(BaseModel):
 class ConceptExplanation(BaseModel):
     """Structured prerequisite concept explanation."""
 
-    explanation: str = Field(
-        description="Simple explanation (3-5 sentences MAX, ~75-100 words)",
+    explanation: Annotated[str, Target(words=75)] = Field(
+        description="Simple explanation (3-5 sentences MAX)",
         max_length=600,
     )
     why_matters: str = Field(
@@ -108,7 +110,7 @@ PREREQUISITE KNOWLEDGE or a RESEARCH QUESTION.
 **IF RESEARCH QUESTION:** Provide refusal_guidance with Socratic redirection."""
 
 
-CONCEPT_EXPLANATION_INSTRUCTION = """You provide simple, context-bound explanations \
+CONCEPT_EXPLANATION_INSTRUCTION = f"""You provide simple, context-bound explanations \
 for PREREQUISITE concepts.
 
 **EXPLANATION STRUCTURE:**
@@ -134,7 +136,7 @@ for PREREQUISITE concepts.
    - Tied to their research
 
 **CRITICAL RULES:**
-1. **BREVITY**: 3-5 sentences for explanation (75-100 words MAX)
+1. **BREVITY**: 3-5 sentences for explanation ({length_hint(ConceptExplanation, "explanation")} MAX)
 2. **CONTEXT-BOUND**: Always tie to student's project
 3. **AGE-APPROPRIATE**: Match student's level"""
 

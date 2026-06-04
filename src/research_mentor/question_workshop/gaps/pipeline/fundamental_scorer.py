@@ -77,7 +77,7 @@ async def score_fundamental(
 
     # Collect successful scores
     scored: list[ScoredQuestion] = []
-    for candidate, result in zip(candidates.questions, results):
+    for candidate, result in zip(candidates.questions, results, strict=False):
         if isinstance(result, BaseException):
             logger.warning(
                 "Scoring failed for '{}': {}",

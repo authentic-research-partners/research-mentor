@@ -61,7 +61,7 @@ def _fix_gte_buffers(model: SentenceTransformer) -> None:
             dtype=torch.get_default_dtype(),
         )
     except (AttributeError, TypeError, IndexError):
-        pass
+        logger.debug("Rotary-embedding patch skipped — incompatible internal structure")
 
 
 def _load_sentence_transformer(model_name: str) -> SentenceTransformer:
@@ -256,7 +256,7 @@ async def rebuild_embedding_tables(dimension: int | None = None) -> dict[str, in
         if memories:
             texts = [row[1] for row in memories]
             blobs = await embed_texts(texts)
-            for (rowid, _), blob in zip(memories, blobs):
+            for (rowid, _), blob in zip(memories, blobs, strict=False):
                 await db.execute(
                     "INSERT INTO memory_embeddings (rowid, embedding) VALUES (?, ?)",
                     (rowid, blob),
@@ -278,7 +278,7 @@ async def rebuild_embedding_tables(dimension: int | None = None) -> dict[str, in
         if chunks:
             texts = [row[1] for row in chunks]
             blobs = await embed_texts(texts)
-            for (chunk_id, _), blob in zip(chunks, blobs):
+            for (chunk_id, _), blob in zip(chunks, blobs, strict=False):
                 await db.execute(
                     "INSERT INTO artifact_embeddings (rowid, embedding) VALUES (?, ?)",
                     (chunk_id, blob),
@@ -300,7 +300,7 @@ async def rebuild_embedding_tables(dimension: int | None = None) -> dict[str, in
         if retractions:
             texts = [row[1] for row in retractions]
             blobs = await embed_texts(texts)
-            for (rowid, _), blob in zip(retractions, blobs):
+            for (rowid, _), blob in zip(retractions, blobs, strict=False):
                 await db.execute(
                     "INSERT INTO retraction_watch_embeddings "
                     "(rowid, embedding) VALUES (?, ?)",

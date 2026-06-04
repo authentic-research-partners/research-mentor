@@ -12,10 +12,10 @@ import mimetypes
 import time
 from pathlib import Path
 
-import openai
 from loguru import logger
 
 from research_mentor.config import load_config
+from research_mentor.llm import get_vision_client
 
 
 async def interpret_file(
@@ -45,16 +45,8 @@ async def interpret_file(
     config = load_config()
     vcfg = config.vision
 
-    # Read API key
-    key_path = Path(vcfg.api_key_file).expanduser()
-    if not key_path.exists():
-        raise FileNotFoundError(
-            f"Vision API key file not found: {key_path}. "
-            "Create it with: echo 'sk-...' > ~/.research-mentor/vision_api_key"
-        )
-    api_key = (await asyncio.to_thread(key_path.read_text)).strip()
-    if not api_key:
-        raise ValueError(f"Vision API key file is empty: {key_path}")
+    # Vision client — its own endpoint/key/timeout, built by the LLM factory.
+    client = await get_vision_client()
 
     # Determine MIME type and base64-encode
     mime_type = mimetypes.guess_type(str(path))[0] or "application/octet-stream"
@@ -73,12 +65,6 @@ async def interpret_file(
             + "Examine this file. Transcribe all text. "
             "Describe diagrams, charts, tables, visual elements."
         )
-
-    client = openai.AsyncOpenAI(
-        base_url=vcfg.api_base_url,
-        api_key=api_key,
-        timeout=vcfg.api_timeout,
-    )
 
     t0 = time.monotonic()
     response = await client.chat.completions.create(

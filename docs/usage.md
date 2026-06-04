@@ -10,7 +10,7 @@ For installation instructions, see [INSTALLATION.md](../INSTALLATION.md). For co
 research-mentor         # start the server
 ```
 
-Open http://localhost:8080 in your browser. The web UI handles everything from there — projects, conversations, question workshop, sharing, and settings.
+Open http://localhost:8080 in your browser. The web UI handles everything from there - projects, conversations, question workshop, sharing, and settings.
 
 Run `research-mentor doctor` at any time to check that everything is working.
 
@@ -74,7 +74,7 @@ Configure the provider and model in the Settings page or in [configuration.md](c
 
 ## External Services
 
-The mentor can search academic databases and the web during conversations. All services are optional — the mentor works without them.
+The mentor can search academic databases and the web during conversations. All services are optional - the mentor works without them.
 
 | Service | Purpose | API Key |
 |---------|---------|---------|
@@ -86,7 +86,7 @@ The mentor can search academic databases and the web during conversations. All s
 | Brave Search | Web search | Required (free tier available) |
 | Tavily | Web search (alternative) | Required (free tier available) |
 
-Academic APIs work out of the box with no setup. Web search requires one API key — configure via **Settings > External Services & Tools** in the UI.
+Academic APIs work out of the box with no setup. Web search requires one API key - configure via **Settings > External Services & Tools** in the UI.
 
 ---
 

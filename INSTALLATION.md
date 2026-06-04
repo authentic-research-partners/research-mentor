@@ -1,8 +1,8 @@
 # Installation
 
-This guide assumes you're starting from scratch — no tools installed yet.
+This guide assumes you're starting from scratch - no tools installed yet.
 
-Research Mentor requires Python 3.13. You don't need to install it yourself — the installer (`uv`) downloads it automatically into its own location, without affecting any Python you may already have.
+Research Mentor requires Python 3.13. You don't need to install it yourself - the installer (`uv`) downloads it automatically into its own location, without affecting any Python you may already have.
 
 ## Windows
 
@@ -74,9 +74,9 @@ Run `research-mentor doctor` at any time to check that everything is working.
 
 ## Choose an LLM Backend
 
-Research Mentor needs a language model to work. Run `research-mentor doctor` — it will detect your hardware and tell you which options are available.
+Research Mentor needs a language model to work. Run `research-mentor doctor` - it will detect your hardware and tell you which options are available.
 
-### Claude Code CLI (default — works on any computer)
+### Claude Code CLI (default - works on any computer)
 
 Uses Anthropic's Claude via a subscription. No GPU needed.
 
@@ -86,7 +86,7 @@ Uses Anthropic's Claude via a subscription. No GPU needed.
    ```bash
    npm install -g @anthropic-ai/claude-code
    ```
-4. Log in — this opens your browser to authenticate:
+4. Log in - this opens your browser to authenticate:
    ```bash
    claude
    ```
@@ -96,9 +96,9 @@ Uses Anthropic's Claude via a subscription. No GPU needed.
    research-mentor
    ```
 
-### Local vLLM (optional — if you have an NVIDIA GPU)
+### Local vLLM (optional - if you have an NVIDIA GPU)
 
-If `research-mentor doctor` detects a compatible NVIDIA GPU (16GB+ VRAM), you can run everything locally — nothing is sent to the internet.
+If `research-mentor doctor` detects a compatible NVIDIA GPU (16GB+ VRAM), you can run everything locally - nothing is sent to the internet.
 
 The model runs in a container (Podman), so there's nothing extra to install in Python.
 
@@ -162,30 +162,30 @@ research-mentor serve --backend vllm
 
 ### Switching Backends
 
-You can switch backends in the UI sidebar at any time — no restart needed. Both backends use the same database and projects.
+You can switch backends in the UI sidebar at any time - no restart needed. Both backends use the same database and projects.
 
 ---
 
 ## System Requirements
 
-- **Python:** 3.13 (installed automatically by uv — no manual install needed)
+- **Python:** 3.13 (installed automatically by uv - no manual install needed)
 - **Disk space:** ~2 GB (for dependencies and embedding model)
 - **RAM:** 2 GB minimum
 
 ### For local vision (optional)
 
-Local vision lets the mentor interpret uploaded images, charts, and figures entirely on your machine — nothing is sent to the internet. It runs on CPU (no GPU needed) but requires more RAM and disk space.
+Local vision lets the mentor interpret uploaded images, charts, and figures entirely on your machine - nothing is sent to the internet. It runs on CPU (no GPU needed) but requires more RAM and disk space.
 
 - **Disk space:** ~4 GB additional (vision model weights)
 - **RAM:** ~10 GB total during image processing (model is unloaded when idle)
-- **Speed:** ~15–90 seconds per image on CPU (runs in the background — does not block the conversation)
+- **Speed:** ~15–90 seconds per image on CPU (runs in the background - does not block the conversation)
 - **Alternative:** If you use the Claude CLI backend, vision uses Claude instead (faster, no extra download needed)
 
 ### For local vLLM (optional)
 
 - **NVIDIA GPU** with 16GB+ VRAM (RTX 4060 Ti 16GB, RTX 4070+, RTX 4090, etc.)
 - **Platform:** Linux, WSL2, or Windows with Podman Desktop
-- **Not supported:** macOS (no NVIDIA GPU — use Claude CLI or API backend instead)
+- **Not supported:** macOS (no NVIDIA GPU - use Claude CLI or API backend instead)
 - **Disk space:** ~15GB additional (container image + model weights)
 
 ---
@@ -236,7 +236,7 @@ rm -rf ~/.research-mentor
 
 ### Step 3: Remove cached models (optional)
 
-If you used the local embedding model or vLLM, model weights are cached in `~/.cache/huggingface/`. This folder is shared with other HuggingFace-based tools — only delete it if nothing else uses it.
+If you used the local embedding model or vLLM, model weights are cached in `~/.cache/huggingface/`. This folder is shared with other HuggingFace-based tools - only delete it if nothing else uses it.
 
 ```
 rm -rf ~/.cache/huggingface
@@ -260,6 +260,6 @@ After these steps, Research Mentor is fully removed from your system.
 - **"unresolvable CDI devices"**: NVIDIA CDI spec is missing. Run: `sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml`
 - **"nvidia-ctk: command not found"**: Install nvidia-container-toolkit (see GPU setup above). On WSL2, you likely need to add the NVIDIA repo first.
 - **"podman: command not found"**: Install Podman: `sudo apt install podman` (Debian/Ubuntu) or `sudo dnf install podman` (Fedora/RHEL).
-- **Container starts but API never responds**: Check logs with `research-mentor vllm-container logs -f`. Common cause: GPU out of memory — try lowering `gpu_memory_utilization` in config.
+- **Container starts but API never responds**: Check logs with `research-mentor vllm-container logs -f`. Common cause: GPU out of memory - try lowering `gpu_memory_utilization` in config.
 - **Model downloading is slow**: First run downloads ~6-12GB of model weights. Subsequent starts reuse the cached weights from `~/.cache/huggingface/`.
 
